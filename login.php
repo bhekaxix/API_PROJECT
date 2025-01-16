@@ -80,7 +80,6 @@ class UserLogin {
             $mail->setFrom('taongabp@gmail.com', 'BBIT Exempt');
             $mail->addAddress($recipientEmail, $recipientName); // Use user's email
 
-
             // Email content
             $mail->isHTML(true);
             $mail->Subject = 'Your Verification Code';
@@ -107,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($user) {
         $otp = $userLogin->updateOTP($user['id']);
-        $userLogin->sendOTP($user['email'], $otp);
+        $userLogin->sendOtpEmail($user['email'], $user['username'], $otp);
 
         $_SESSION['user_id'] = $user['id'];
         header('Location: verification_login.php');
@@ -117,18 +116,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Login Page</title>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
-<div id="login">
+    <div id="login">
         <h3 class="text-center text-white pt-5">Login form</h3>
         <div class="container">
             <div id="login-row" class="row justify-content-center align-items-center">
@@ -142,13 +142,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                             <div class="form-group">
                                 <label for="password" class="text-info">Password:</label><br>
-                                <input type="text" name="password" id="password" class="form-control">
+                                <input type="password" name="password" id="password" class="form-control">
                             </div>
                             <div class="form-group">
                                 <label for="remember-me" class="text-info"><span>Remember me</span> <span><input id="remember-me" name="remember-me" type="checkbox"></span></label><br>
-                                <input type="submit" name="submit" class="btn btn-info btn-md" value="submit">
+                                <input type="submit" name="submit" class="btn btn-info btn-md" value="Submit">
                             </div>
                             <div id="register-link" class="text-right">
+                                <a href="forgot_password.php" class="text-info">Forgot Password?</a><br>
                                 <a href="#" class="text-info">Register here</a>
                             </div>
                         </form>
@@ -159,4 +160,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </body>
 </html>
-
