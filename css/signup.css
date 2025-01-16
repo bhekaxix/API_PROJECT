@@ -1,94 +1,93 @@
-.vh-100 {
-    height: 100vh;
+/* General Styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    height: 100%;
   }
   
+  /* Background Image */
   .bg-image {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
   }
   
+  /* Gradient Over Image */
   .gradient-custom-3 {
     background: linear-gradient(to right, rgba(132, 250, 176, 0.5), rgba(143, 211, 244, 0.5));
+  }
+  
+  /* Card Styles */
+  .card {
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+  }
+  
+  .card-body {
+    padding: 40px;
+  }
+  
+  /* Form Styles */
+  .form-outline {
+    position: relative;
+    margin-bottom: 25px;
+  }
+  
+  .form-outline input {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .form-outline label {
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    background: #fff;
+    padding: 0 5px;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  /* Button Styles */
+  .btn {
+    display: inline-block;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+  
+  .btn:hover {
+    background-color: #218838;
   }
   
   .gradient-custom-4 {
     background: linear-gradient(to right, rgba(132, 250, 176, 1), rgba(143, 211, 244, 1));
   }
   
-  .card {
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  }
-  
-  .card-body {
-    padding: 2.5rem;
-  }
-  
-  .text-uppercase {
-    text-transform: uppercase;
-  }
-  
-  .text-center {
-    text-align: center;
-  }
-  
-  .form-outline {
-    position: relative;
-    margin-bottom: 1.5rem;
-  }
-  
-  .form-control {
-    font-size: 1rem;
-    padding: 0.75rem;
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    transition: all 0.3s ease;
-  }
-  
-  .form-control:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-  }
-  
-  .form-label {
-    position: absolute;
-    top: -1rem;
-    left: 0.75rem;
-    font-size: 0.875rem;
-    color: #495057;
-    transition: all 0.3s ease;
-  }
-  
+  /* Checkbox Styles */
   .form-check-input {
-    margin-right: 0.5rem;
-    width: 1.25rem;
-    height: 1.25rem;
-    border-radius: 0.25rem;
-    border: 1px solid #ced4da;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
     cursor: pointer;
   }
   
-  .btn {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 0.25rem;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .btn:hover {
-    background-color: #78c3a3;
-    color: #fff;
-  }
-  
-  .text-muted {
-    color: #6c757d;
-  }
-  
+  /* Text Styles */
   .text-body {
-    color: #000;
+    color: #007bff;
     text-decoration: none;
   }
   
@@ -96,13 +95,15 @@
     text-decoration: underline;
   }
   
-  .fw-bold {
-    font-weight: 700;
-  }
-  
+  /* Responsive Design */
   @media (max-width: 768px) {
-    .card {
-      padding: 1.5rem;
+    .card-body {
+      padding: 20px;
+    }
+  
+    .form-outline input {
+      font-size: 14px;
+      padding: 8px 10px;
     }
   }
   
