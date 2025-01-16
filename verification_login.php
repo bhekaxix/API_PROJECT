@@ -63,7 +63,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $dbConnection = new DatabaseConnection('localhost', 'assignmentii', 'root', '');
+    $dbConnection = new DatabaseConnection('localhost', '2fa', 'root', '');
     $conn = $dbConnection->connect();
 
     $otpVerification = new OTPVerification($conn);
