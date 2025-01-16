@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $userLogin->sendOtpEmail($user['email'], $user['username'], $otp);
 
         $_SESSION['user_id'] = $user['id'];
-        header('Location: verification_login.php');
+        header('Location: dashboard.php');
         exit();
     } else {
         echo "Invalid username or password.";
