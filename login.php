@@ -107,7 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($user) {
         $otp = $userLogin->updateOTP($user['id']);
-        $userLogin->sendOTP($user['email'], $otp);
+        $userLogin->sendOtpEmail($user['email'], $user['username'], $otp);
+
 
         $_SESSION['user_id'] = $user['id'];
         header('Location: verification_login.php');
@@ -191,7 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
         <p>Don't have an account? <a href="signup.php">Sign up here</a>.</p><br>
         <a href="forgot_password.php" class="text-info">Forgot Password?</a><br>
-        <a href="reset_password.php" class="text-info">Reset Password?</a><br>
+       
        
     </div>
 </body>

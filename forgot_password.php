@@ -45,7 +45,11 @@ class PasswordReset {
         if ($stmt->rowCount() === 1) {
             $this->generateResetCode();
             $this->saveResetCode();
-            $this->sendResetEmail();
+            $this->sendOtpEmail($this->email, "User", $this->reset_code); // Send the email
+
+            // Redirect to reset password page after sending the email
+            header("Location: reset_password.php");
+            exit();
         } else {
             echo "Email not found.";
         }
@@ -81,7 +85,6 @@ class PasswordReset {
             // Recipient settings
             $mail->setFrom('taongabp@gmail.com', 'BBIT Exempt');
             $mail->addAddress($recipientEmail, $recipientName); // Use user's email
-
 
             $mail->isHTML(true);
             $mail->Subject = 'Password Reset Code';
