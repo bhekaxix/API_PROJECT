@@ -1,28 +1,71 @@
 <?php
-include('dbconnection.php');
+// Include PHPMailer
 require 'vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = htmlspecialchars(trim($_POST['email']));
+class Database {
+    private $host = 'localhost';
+    private $dbname = 'your_database';
+    private $username = 'your_username';
+    private $password = 'your_password';
+    private $conn;
 
-    // Check if the user exists
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
-    $stmt->execute([':email' => $email]);
+    public function __construct() {
+        try {
+            $this->conn = new PDO("mysql:host={$this->host};dbname={$this->dbname}", $this->username, $this->password);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            die("Connection failed: " . $e->getMessage());
+        }
+    }
 
-    if ($stmt->rowCount() === 1) {
-        $reset_code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        $expiration = date('Y-m-d H:i:s', strtotime('+15 minutes'));
+    public function getConnection() {
+        return $this->conn;
+    }
+}
 
-        // Insert or update the reset code
-        $stmt = $conn->prepare("
+class PasswordReset {
+    private $conn;
+    private $email;
+    private $reset_code;
+    private $expiration;
+
+    public function __construct($dbConnection) {
+        $this->conn = $dbConnection;
+    }
+
+    public function requestReset($email) {
+        $this->email = htmlspecialchars(trim($email));
+
+        // Check if the user exists
+        $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->execute([':email' => $this->email]);
+
+        if ($stmt->rowCount() === 1) {
+            $this->generateResetCode();
+            $this->saveResetCode();
+            $this->sendResetEmail();
+        } else {
+            echo "Email not found.";
+        }
+    }
+
+    private function generateResetCode() {
+        $this->reset_code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $this->expiration = date('Y-m-d H:i:s', strtotime('+15 minutes'));
+    }
+
+    private function saveResetCode() {
+        $stmt = $this->conn->prepare("
             INSERT INTO password_resets (email, reset_code, expiration) 
             VALUES (:email, :reset_code, :expiration)
             ON DUPLICATE KEY UPDATE reset_code = :reset_code, expiration = :expiration, used = FALSE
         ");
-        $stmt->execute([':email' => $email, ':reset_code' => $reset_code, ':expiration' => $expiration]);
+        $stmt->execute([':email' => $this->email, ':reset_code' => $this->reset_code, ':expiration' => $this->expiration]);
+    }
 
-        // Send email with the reset code
+    private function sendResetEmail() {
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
@@ -34,22 +77,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mail->Port = 465;
 
             $mail->setFrom('your_email@gmail.com', 'Password Reset');
-            $mail->addAddress($email);
+            $mail->addAddress($this->email);
 
             $mail->isHTML(true);
             $mail->Subject = 'Password Reset Code';
-            $mail->Body = "Your password reset code is <strong>$reset_code</strong>. It expires in 15 minutes.";
+            $mail->Body = "Your password reset code is <strong>{$this->reset_code}</strong>. It expires in 15 minutes.";
 
             $mail->send();
             echo "A reset code has been sent to your email.";
         } catch (Exception $e) {
             echo "Error sending email: {$mail->ErrorInfo}";
         }
-    } else {
-        echo "Email not found.";
     }
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $database = new Database();
+    $conn = $database->getConnection();
+
+    $passwordReset = new PasswordReset($conn);
+    $passwordReset->requestReset($_POST['email']);
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
