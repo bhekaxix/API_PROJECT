@@ -28,3 +28,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password</title>
+</head>
+<body>
+    <h2>Reset Password</h2>
+    <form action="reset_password.php" method="POST">
+        <label for="email">Enter your email:</label>
+        <input type="email" id="email" name="email" required>
+        
+        <label for="reset_code">Enter reset code:</label>
+        <input type="text" id="reset_code" name="reset_code" required>
+        
+        <label for="new_password">Enter new password:</label>
+        <input type="password" id="new_password" name="new_password" required>
+        
+        <button type="submit">Reset Password</button>
+    </form>
+</body>
+</html>
