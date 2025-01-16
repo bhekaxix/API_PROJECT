@@ -55,7 +55,7 @@ if (isset($_GET['email'])) {
     $email = htmlspecialchars(trim($_GET['email']));
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $dbConnection = new DatabaseConnection('localhost', 'assignmentii', 'root', '');
+        $dbConnection = new DatabaseConnection('localhost', '2fa', 'root', '');
         $conn = $dbConnection->connect();
 
         $otpVerification = new OTPVerification($conn);
