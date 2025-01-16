@@ -80,6 +80,7 @@ class UserLogin {
             $mail->setFrom('taongabp@gmail.com', 'BBIT Exempt');
             $mail->addAddress($recipientEmail, $recipientName); // Use user's email
 
+
             // Email content
             $mail->isHTML(true);
             $mail->Subject = 'Your Verification Code';
@@ -106,10 +107,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($user) {
         $otp = $userLogin->updateOTP($user['id']);
-        $userLogin->sendOtpEmail($user['email'], $user['username'], $otp);
+        $userLogin->sendOTP($user['email'], $otp);
 
         $_SESSION['user_id'] = $user['id'];
-        header('Location: verification.php');
+        header('Location: verification_login.php');
         exit();
     } else {
         echo "Invalid username or password.";
@@ -122,42 +123,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+        }
+        .form-container {
+            max-width: 400px;
+            margin: auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333333;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555555;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        p {
+            text-align: center;
+        }
+        a {
+            color: #1e90ff;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <div id="login">
-        <h3 class="text-center text-white pt-5">Login form</h3>
-        <div class="container">
-            <div id="login-row" class="row justify-content-center align-items-center">
-                <div id="login-column" class="col-md-6">
-                    <div id="login-box" class="col-md-12">
-                        <form id="login-form" class="form" action="" method="post">
-                            <h3 class="text-center text-info">Login</h3>
-                            <div class="form-group">
-                                <label for="username" class="text-info">Username:</label><br>
-                                <input type="text" name="username" id="username" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="password" class="text-info">Password:</label><br>
-                                <input type="password" name="password" id="password" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="remember-me" class="text-info"><span>Remember me</span> <span><input id="remember-me" name="remember-me" type="checkbox"></span></label><br>
-                                <input type="submit" name="submit" class="btn btn-info btn-md" value="Submit">
-                            </div>
-                            <div id="register-link" class="text-right">
-                                <a href="forgot_password.php" class="text-info">Forgot Password?</a><br>
-                                <a href="reset_password.php" class="text-info">Reset Password?</a><br>
-                                <a href="signup.php" class="text-info">Register here</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="form-container">
+        <h1>Login</h1>
+        <form action="login.php" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            
+            <button type="submit">Login</button>
+        </form>
+        <p>Don't have an account? <a href="signup.php">Sign up here</a>.</p><br>
+        <a href="forgot_password.php" class="text-info">Forgot Password?</a><br>
+        <a href="reset_password.php" class="text-info">Reset Password?</a><br>
+        <a href="signup.php" class="text-info">Register here</a></div>
     </div>
 </body>
 </html>
+

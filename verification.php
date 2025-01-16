@@ -62,7 +62,7 @@ if (isset($_GET['email'])) {
         $verificationCode = htmlspecialchars(trim($_POST['verificationCode']));
 
         if ($otpVerification->verifyAndClearOTP($email, $verificationCode)) {
-            header('Location: dashboard.php');
+            header('Location: login.php');
             exit;
         } else {
             $error = "Invalid or expired verification code.";
