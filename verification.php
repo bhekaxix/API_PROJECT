@@ -42,7 +42,7 @@ class OTPVerification {
         $user = $this->getUserByEmail($email);
 
         if ($user && $user['otp_code'] === $verificationCode && strtotime($user['otp_expiration']) > time()) {
-            $stmt = $this->conn->prepare("UPDATE users SET is_verified = 1, otp_code = NULL, otp_expiration = NULL WHERE email = :email");
+            $stmt = $this->conn->prepare("UPDATE users SET otp_code = NULL, otp_expiration = NULL WHERE email = :email");
             $stmt->execute([':email' => $email]);
             return true;
         }
