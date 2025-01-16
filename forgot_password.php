@@ -65,19 +65,23 @@ class PasswordReset {
         $stmt->execute([':email' => $this->email, ':reset_code' => $this->reset_code, ':expiration' => $this->expiration]);
     }
 
-    private function sendResetEmail() {
+    public function sendOtpEmail($recipientEmail, $recipientName, $otp) {
         $mail = new PHPMailer(true);
-        try {
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'your_email@gmail.com';
-            $mail->Password = 'your_password'; // Use an app-specific password
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port = 465;
 
-            $mail->setFrom('your_email@gmail.com', 'Password Reset');
-            $mail->addAddress($this->email);
+        try {
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'taongabp@gmail.com'; // Replace with your email
+            $mail->Password   = 'xjguxbwosrfxpkop'; // Replace with your app-specific password
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port       = 465;
+
+            // Recipient settings
+            $mail->setFrom('taongabp@gmail.com', 'BBIT Exempt');
+            $mail->addAddress($recipientEmail, $recipientName); // Use user's email
+
 
             $mail->isHTML(true);
             $mail->Subject = 'Password Reset Code';
