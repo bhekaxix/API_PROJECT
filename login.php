@@ -95,7 +95,7 @@ class UserLogin {
 
 // Main Logic
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $dbConnection = new DatabaseConnection('localhost', 'assignmentii', 'root', '');
+    $dbConnection = new DatabaseConnection('localhost', '2fa', 'root', '');
     $conn = $dbConnection->connect();
 
     $userLogin = new UserLogin($conn);
