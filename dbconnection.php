@@ -29,6 +29,6 @@ class DatabaseConnection {
 
 
 // Database credentials
-$dbConnection = new DatabaseConnection('localhost', 'assignmentii', 'root', '');
+$dbConnection = new DatabaseConnection('localhost', '2fa', 'root', '');
 $conn = $dbConnection->connect();
 
