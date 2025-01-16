@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userId = $_SESSION['user_id'];
 
     if ($otpVerification->verifyOTP($userId, $verificationCode)) {
-        header('Location: dashboard_login.php');
+        header('Location: dashboard.php');
         exit();
     } else {
         $error = "Invalid or expired verification code.";
