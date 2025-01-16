@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $otp = $userRegistration->registerUser($firstname, $lastname, $mobile, $username, $email, $password);
 
         if ($userRegistration->sendOtpEmail($email, "$firstname $lastname", $otp)) {
-            header('Location: login.php?email=' . urlencode($email));
+            header('Location: verification.php?email=' . urlencode($email));
             exit;
         } else {
             echo "Failed to send OTP email.";
