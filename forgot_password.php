@@ -6,9 +6,9 @@ use PHPMailer\PHPMailer\Exception;
 
 class Database {
     private $host = 'localhost';
-    private $dbname = 'your_database';
-    private $username = 'your_username';
-    private $password = 'your_password';
+    private $dbname = '2fa';
+    private $username = 'root';
+    private $password = '';
     private $conn;
 
     public function __construct() {
