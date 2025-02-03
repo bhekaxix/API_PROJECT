@@ -1,23 +1,77 @@
 <?php
+// Include PHPMailer and Database
+require 'vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+class Database {
+    private $host = 'localhost';
+    private $dbname = '2fa';
+    private $username = 'root';
+    private $password = '';
+    private $conn;
+
+    public function __construct() {
+        try {
+            $this->conn = new PDO("mysql:host={$this->host};dbname={$this->dbname}", $this->username, $this->password);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            die("Connection failed: " . $e->getMessage());
+        }
+    }
+
+    public function getConnection() {
+        return $this->conn;
+    }
+}
+
+// Password update class
+class PasswordReset {
+    private $conn;
+
+    public function __construct($conn) {
+        $this->conn = $conn;
+    }
+
+    public function updatePassword($email, $newPassword) {
+        try {
+            $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+            $stmt = $this->conn->prepare("UPDATE users SET password = :password WHERE email = :email");
+            $stmt->bindParam(':password', $hashedPassword);
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+
+            if ($stmt->rowCount() > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require 'vendor/autoload.php';
-    
     $database = new Database();
     $conn = $database->getConnection();
     $passwordReset = new PasswordReset($conn);
-    
+
     if (isset($_POST['email']) && isset($_POST['new_password'])) {
         $email = $_POST['email'];
         $newPassword = $_POST['new_password'];
-        
-        $passwordReset->updatePassword($email, $newPassword);
-        
-        // Redirect to login page after successful password update
-        header("Location: login.php");
-        exit();
+
+        if ($passwordReset->updatePassword($email, $newPassword)) {
+            // Redirect to login page after successful password update
+            header("Location: login.php");
+            exit();
+        } else {
+            echo "Error updating password.";
+        }
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
