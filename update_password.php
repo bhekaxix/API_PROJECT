@@ -1,9 +1,7 @@
 <?php
-// Include PHPMailer and Database
 require 'vendor/autoload.php';
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
+// Database connection class
 class Database {
     private $host = 'localhost';
     private $dbname = '2fa';
@@ -25,7 +23,7 @@ class Database {
     }
 }
 
-// Password update class
+// Password reset class
 class PasswordReset {
     private $conn;
 
@@ -42,12 +40,12 @@ class PasswordReset {
             $stmt->execute();
 
             if ($stmt->rowCount() > 0) {
-                return true;
+                return true;  // Password updated successfully
             } else {
-                return false;
+                return false; // No rows affected, possibly incorrect email
             }
         } catch (PDOException $e) {
-            return false;
+            return false; // Error during query execution
         }
     }
 }
@@ -61,17 +59,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = $_POST['email'];
         $newPassword = $_POST['new_password'];
 
-        if ($passwordReset->updatePassword($email, $newPassword)) {
+        $success = $passwordReset->updatePassword($email, $newPassword);
+
+        if ($success) {
             // Redirect to login page after successful password update
             header("Location: login.php");
             exit();
         } else {
-            echo "Error updating password.";
+            $error = "Error updating password. Please try again.";
         }
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -83,12 +82,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <h2>Update Password</h2>
     <form action="update_password.php" method="POST">
-        <input type="hidden" name="email" value="<?php echo htmlspecialchars($_GET['email'] ?? ''); ?>">
+        <!-- Sanitize email input -->
+        <?php $email = htmlspecialchars($_GET['email'] ?? ''); ?>
+        <input type="hidden" name="email" value="<?php echo $email; ?>">
         
         <label for="new_password">New Password:</label>
         <input type="password" id="new_password" name="new_password" required><br><br>
         
         <button type="submit">Update Password</button>
     </form>
+
+    <?php if (isset($error)): ?>
+        <p style="color: red;"><?php echo $error; ?></p>
+    <?php endif; ?>
 </body>
 </html>
