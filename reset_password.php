@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $newPassword = $_POST['new_password'];
                 $passwordReset->updatePassword($email, $newPassword);
                 
-                // ✅ Redirect to login page after updating the password
+                // Redirect to login page after updating the password
                 header("Location: login.php");
                 exit(); // Prevent further script execution
             }
