@@ -33,7 +33,11 @@ class PasswordReset {
     }
 
     public function verifyResetCode($email, $reset_code) {
-        $stmt = $this->conn->prepare("SELECT expiration FROM password_resets WHERE email = :email AND reset_code = :reset_code AND used = FALSE");
+        $email = htmlspecialchars(trim($email));
+        $reset_code = htmlspecialchars(trim($reset_code));
+
+        // Fetch reset code and expiration from database
+        $stmt = $this->conn->prepare("SELECT * FROM password_resets WHERE email = :email AND reset_code = :reset_code");
         $stmt->execute([':email' => $email, ':reset_code' => $reset_code]);
         $resetRecord = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -49,10 +53,6 @@ class PasswordReset {
         $stmt->execute([':password_hash' => $passwordHash, ':email' => $email]);
 
         // Mark the reset code as used
-        $this->markCodeAsUsed($email);
-    }
-
-    private function markCodeAsUsed($email) {
         $stmt = $this->conn->prepare("UPDATE password_resets SET used = TRUE WHERE email = :email");
         $stmt->execute([':email' => $email]);
     }
@@ -63,21 +63,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn = $database->getConnection();
     $passwordReset = new PasswordReset($conn);
 
-    if (!empty($_POST['email']) && !empty($_POST['reset_code'])) {
-        $email = htmlspecialchars(trim($_POST['email']));
-        $reset_code = htmlspecialchars(trim($_POST['reset_code']));
+    if (isset($_POST['email']) && isset($_POST['reset_code'])) {
+        $email = $_POST['email'];
+        $reset_code = $_POST['reset_code'];
 
         if ($passwordReset->verifyResetCode($email, $reset_code)) {
-            if (!empty($_POST['new_password'])) {
-                $newPassword = $_POST['new_password'];
-                $passwordReset->updatePassword($email, $newPassword);
-                
-                // Redirect to login page after updating password
-                header("Location: login.php");
-                exit();
-            }
+            // Redirect to the password update form
+            header("Location: update_password.php?email=" . urlencode($email));
+            exit();
         } else {
-            echo "<script>alert('Invalid or expired reset code.'); window.location.href='reset_password.php';</script>";
+            echo "Invalid or expired reset code.";
         }
     }
 }
@@ -88,10 +83,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password</title>
+    <title>Verify Reset Code</title>
 </head>
 <body>
-    <h2>Reset Password</h2>
+    <h2>Verify Reset Code</h2>
     <form action="reset_password.php" method="POST">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required><br><br>
@@ -101,14 +96,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <button type="submit">Verify Reset Code</button>
     </form>
-    
-    <?php if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_code'])): ?>
-        <form action="reset_password.php" method="POST">
-            <input type="hidden" name="email" value="<?php echo htmlspecialchars($_POST['email']); ?>">
-            <label for="new_password">New Password:</label>
-            <input type="password" id="new_password" name="new_password" required><br><br>
-            <button type="submit">Update Password</button>
-        </form>
-    <?php endif; ?>
 </body>
 </html>
