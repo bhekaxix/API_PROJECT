@@ -27,34 +27,20 @@ class Database {
 
 class PasswordReset {
     private $conn;
-    private $email;
-    private $reset_code;
-    private $expiration;
 
     public function __construct($dbConnection) {
         $this->conn = $dbConnection;
     }
 
     public function verifyResetCode($email, $reset_code) {
-        $this->email = htmlspecialchars(trim($email));
-        $this->reset_code = htmlspecialchars(trim($reset_code));
-
-        // Fetch reset code and expiration from database
-        $stmt = $this->conn->prepare("SELECT * FROM password_resets WHERE email = :email AND reset_code = :reset_code");
-        $stmt->execute([':email' => $this->email, ':reset_code' => $this->reset_code]);
+        $stmt = $this->conn->prepare("SELECT expiration FROM password_resets WHERE email = :email AND reset_code = :reset_code AND used = FALSE");
+        $stmt->execute([':email' => $email, ':reset_code' => $reset_code]);
         $resetRecord = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($resetRecord) {
-            $this->expiration = $resetRecord['expiration'];
-
-            // Check if the reset code is expired
-            if (strtotime($this->expiration) > time()) {
-                return true; // Reset code is valid and not expired
-            } else {
-                return false; // Reset code has expired
-            }
+        if ($resetRecord && strtotime($resetRecord['expiration']) > time()) {
+            return true; // Reset code is valid and not expired
         }
-        return false; // Invalid reset code
+        return false; // Invalid or expired reset code
     }
 
     public function updatePassword($email, $newPassword) {
@@ -75,30 +61,26 @@ class PasswordReset {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $database = new Database();
     $conn = $database->getConnection();
-
     $passwordReset = new PasswordReset($conn);
 
-    // Check if the reset code is correct
-    if (isset($_POST['reset_code'])) {
-        $reset_code = $_POST['reset_code'];
-        $email = $_POST['email'];
+    if (!empty($_POST['email']) && !empty($_POST['reset_code'])) {
+        $email = htmlspecialchars(trim($_POST['email']));
+        $reset_code = htmlspecialchars(trim($_POST['reset_code']));
 
         if ($passwordReset->verifyResetCode($email, $reset_code)) {
-            // If the reset code is valid, show the form to update the password
-            if (isset($_POST['new_password'])) {
+            if (!empty($_POST['new_password'])) {
                 $newPassword = $_POST['new_password'];
                 $passwordReset->updatePassword($email, $newPassword);
                 
-                // Redirect to login page after updating the password
+                // Redirect to login page after updating password
                 header("Location: login.php");
-                exit(); // Prevent further script execution
+                exit();
             }
         } else {
-            echo "Invalid or expired reset code.";
+            echo "<script>alert('Invalid or expired reset code.'); window.location.href='reset_password.php';</script>";
         }
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -110,7 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <h2>Reset Password</h2>
-
     <form action="reset_password.php" method="POST">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required><br><br>
@@ -120,17 +101,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <button type="submit">Verify Reset Code</button>
     </form>
-
-    <?php
-    // Show the new password form if the reset code is valid
-    if (isset($_POST['reset_code']) && $_POST['reset_code'] != '') {
-        echo '<form action="reset_password.php" method="POST">
-                <input type="hidden" name="email" value="' . $_POST['email'] . '">
-                <label for="new_password">New Password:</label>
-                <input type="password" id="new_password" name="new_password" required><br><br>
-                <button type="submit">Update Password</button>
-              </form>';
-    }
-    ?>
+    
+    <?php if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_code'])): ?>
+        <form action="reset_password.php" method="POST">
+            <input type="hidden" name="email" value="<?php echo htmlspecialchars($_POST['email']); ?>">
+            <label for="new_password">New Password:</label>
+            <input type="password" id="new_password" name="new_password" required><br><br>
+            <button type="submit">Update Password</button>
+        </form>
+    <?php endif; ?>
 </body>
 </html>
