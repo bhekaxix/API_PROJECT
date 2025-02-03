@@ -1,7 +1,6 @@
 <?php
 require 'vendor/autoload.php';
 
-// Database connection class
 class Database {
     private $host = 'localhost';
     private $dbname = '2fa';
@@ -23,7 +22,6 @@ class Database {
     }
 }
 
-// Password reset class
 class PasswordReset {
     private $conn;
 
@@ -34,6 +32,10 @@ class PasswordReset {
     public function updatePassword($email, $newPassword) {
         try {
             $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+            if (!$hashedPassword) {
+                die("Password hashing failed.");
+            }
+
             $stmt = $this->conn->prepare("UPDATE users SET password = :password WHERE email = :email");
             $stmt->bindParam(':password', $hashedPassword);
             $stmt->bindParam(':email', $email);
@@ -59,14 +61,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = $_POST['email'];
         $newPassword = $_POST['new_password'];
 
-        $success = $passwordReset->updatePassword($email, $newPassword);
-
-        if ($success) {
+        if ($passwordReset->updatePassword($email, $newPassword)) {
             // Redirect to login page after successful password update
             header("Location: login.php");
             exit();
         } else {
-            $error = "Error updating password. Please try again.";
+            echo "Error updating password.";
         }
     }
 }
@@ -82,7 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <h2>Update Password</h2>
     <form action="update_password.php" method="POST">
-        <!-- Sanitize email input -->
         <?php $email = htmlspecialchars($_GET['email'] ?? ''); ?>
         <input type="hidden" name="email" value="<?php echo $email; ?>">
         
@@ -91,9 +90,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         <button type="submit">Update Password</button>
     </form>
-
-    <?php if (isset($error)): ?>
-        <p style="color: red;"><?php echo $error; ?></p>
-    <?php endif; ?>
 </body>
 </html>
