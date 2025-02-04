@@ -56,7 +56,7 @@
 
 .container
 {
-	background-image: linear-gradient(to top,rgba(145, 146, 122, 0.62),rgba(145, 146, 122, 0.2)),url("bg8.jpe");
+	background-image: linear-gradient(to top,rgba(145, 146, 122, 0.62),rgba(145, 146, 122, 0.2)),url("bg8.jpg");
 	background-size: cover;
 	background-repeat: no-repeat;
 	height:100%;
