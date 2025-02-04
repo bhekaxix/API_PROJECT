@@ -33,7 +33,7 @@ $dashboard->displayWelcomeMessage();
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet"  href="dashboard.css">
+	<link rel="stylesheet"  href="/api_project/css/dashboard.css">
 	<title>Oil Refinery</title>
 </head>
 <body>
