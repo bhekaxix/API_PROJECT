@@ -1,0 +1,41 @@
+h1{
+	text-align: center;
+}
+
+body, form {
+	font-family: Arial, Helvetica, sans-serif;
+}
+.container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: crimson;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+ .navbar {
+            display: flex;
+            justify-content: center;
+            background-color: crimson;
+            color: #fff;
+            padding: 10px 0;
+        }
+ .navbar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+form {
+	text-align: center;
+}
+
+
+table {
+	align-self: center;
+
+}
+
+.btn{
+	width: 300px;
+}

@@ -41,7 +41,7 @@ $dashboard->displayWelcomeMessage();
 		<div class="logo"><h2>oIlR</h2></div>
 		<div class="navlinks">
 			<ul>
-				<li><a class="navborder" href="home.php">Home</a></li>
+				<li><a class="navborder" href="dashboard.php">Home</a></li>
 				<li><a class="navborder" href="#">About Us</a></li>
         <li><a class="navborder" href="#">Contact Us</a></li>
 				<li><a class="navborder" href="usersignup.php">Sign Up</a></li>
@@ -57,7 +57,7 @@ $dashboard->displayWelcomeMessage();
       This refinery uses high-tech methods such as solvent extraction, pressing, and refining to produce high-quality edible oils that adhere to strict health and safety regulations. <br><br>
       This Seed oil refinery creates oils that are not only necessary for cooking and food production but also act as crucial components in a variety of consumer goods, from cosmetics to biofuels, by methodically removing contaminants, unfavourable flavours, and guaranteeing nutritional integrity. In a time of increased health concern, as a company we are essential for providing goods that satisfy consumer preferences and spur innovation.
 		</p> 
-        <button class="order"><a href="usersignup.php">Order Now</a></button>
+        <button class="order"><a href="order.php">Order Now</a></button>
   </div>
 
    <!--<!div class="container2">
