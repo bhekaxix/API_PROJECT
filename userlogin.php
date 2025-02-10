@@ -13,7 +13,7 @@
 		<div class="logo"><h2>oIlR</h2></div>
 			<div class="navlinks">
 	<ul>
-		<li><a href="home.html" class="navborder">Home</a></li>
+		<li><a href="home.php" class="navborder">Home</a></li>
 		<li><a class="navborder" href="#">About Us</a></li>
 		<li><a href="#" class="navborder">Contact Us</a></li>
   </ul>
