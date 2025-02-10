@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Execute query
         if ($stmt->execute()) {
-            header("Location: home2.php"); // Redirect to home2.php on success
+            header("Location: dashboard.php"); 
             exit();
         } else {
             echo "Order submission failed.";
