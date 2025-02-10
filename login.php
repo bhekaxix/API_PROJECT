@@ -118,83 +118,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
-            margin: 0;
-            padding: 20px;
-        }
-        .form-container {
-            max-width: 400px;
-            margin: auto;
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333333;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555555;
-        }
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #dddddd;
-            border-radius: 4px;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        p {
-            text-align: center;
-        }
-        a {
-            color: #1e90ff;
-            text-decoration: none;
-        }
-    </style>
+    <link rel="stylesheet" href="/api_project/css/signup.css">
 </head>
 <body>
-    <div class="form-container">
-        <h1>Login</h1>
-        <form action="login.php" method="POST">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" placeholder="Enter your username" required>
-            
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" placeholder="Enter your password" required>
-            
-            <button type="submit">Login</button>
-        </form>
-        <p>Don't have an account? <a href="signup.php">Sign up here</a>.</p><br>
-        <a href="forgot_password.php" class="text-info">Forgot Password?</a><br>
-       
-       
+<div class="nav">
+		<div class="logo"><h2>oIlR</h2></div>
+			<div class="navlinks">
+	<ul>
+		<li><a href="home.php" class="navborder">Home</a></li>
+		<li><a href="signup.php" class="navborder">Sign Up</a></li>
+  </ul>
+ </div>
+</div>
+    
+    <div class="container">
+        <div class="signup-form">
+            <h1 style="color: crimson; text-align: center;">Login</h1>
+            <hr><br>
+
+            <form action="login.php" method="POST">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+                <button type="submit" class="signup">Login</button>
+            </form>
+
+            <p style="text-align: center;">
+                Don't have an account? <a href="signup.php" class="btn-login">Sign up here</a>.
+            </p>
+            <br>
+            <div class="forget">
+                <a href="forgot_password.php">Forgot Password?</a>
+            </div>
+        </div>
     </div>
+
 </body>
 </html>
+
 

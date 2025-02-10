@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="signup.css">
+	<link rel="stylesheet" href="/api_project/css/signup.css">
 	<script src="signup.js"></script>
 
 	<title>User Sign Up</title>
