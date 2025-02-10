@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 require 'dbconnection.php'; // Ensure database connection is included
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
