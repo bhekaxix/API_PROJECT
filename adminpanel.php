@@ -27,10 +27,11 @@ try {
         <ul>
             <li><a href="adminpanel.php"><i class="fas fa-project-diagram"></i>Orders</a></li>
             <li><a href="#"><i class="fas fa-user"></i>Profile</a></li>
-            <li><a href="customerpanel.php"><i class="fas fa-address-card"></i>Customers</a></li>
-            <li><a href="#"><i class="fas fa-address-book"></i>Contact</a></li>
-            <li><a href="#"><i class="fas fa-home"></i>Logout</a></li>
+            <li><a href="customers.php"><i class="fas fa-address-card"></i>Customers</a></li>
+            <li><a href="checkedorders.php"><i class="fas fa-address-book"></i>Checked Orders</a></li>
+            <li><a href="home.php"><i class="fas fa-home "></i>Logout</a></li>
         </ul> 
+        
     </div>
 
     <div class="main_content">

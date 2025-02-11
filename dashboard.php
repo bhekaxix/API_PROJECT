@@ -44,8 +44,8 @@ $dashboard->displayWelcomeMessage();
 				<li><a class="navborder" href="dashboard.php">Home</a></li>
 				<li><a class="navborder" href="#">About Us</a></li>
         <li><a class="navborder" href="#">Contact Us</a></li>
-				<li><a class="navborder" href="usersignup.php">Sign Up</a></li>
-        <li><a class="navborder" href="login.php">Login</a></li>
+				
+        <li><a class="navborder" href="login.php">Logout</a></li>
 			</ul>
 		</div>
 	</div>
