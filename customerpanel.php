@@ -25,7 +25,7 @@ if ($conn) { // Ensure $conn is set before querying
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel</title>
+    <title>customer Panel</title>
     <link rel="stylesheet" href="/api_project/css/styles.css">
     <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
 </head>
@@ -33,7 +33,7 @@ if ($conn) { // Ensure $conn is set before querying
 
 <div class="wrapper">
     <div class="sidebar">
-        <h2>Admin</h2>
+        <h2>Customer</h2>
         <ul>
             <li><a href="adminpanel.php"><i class="fas fa-project-diagram"></i> Orders</a></li>
             <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>

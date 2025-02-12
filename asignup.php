@@ -1,30 +1,55 @@
 <?php
-include 'connect.php';
-if($_SERVER['REQUEST_METHOD'] =='POST') {
-	$adminid= $_POST['adminid'];
-	$name = $_POST['name'];
-	$email = $_POST['email'];
-	$password = $_POST['password'];
-  
-	$sql = "INSERT INTO admins(adminid,name,email,password) VALUES ('$adminid','$name','$email','$password')";
-	$result = mysqli_query($connect,$sql);
-	if($result){
-		//echo "Signup successful";
-		header("location:alogin.php");
+include 'dbconnection.php';
 
-	} else{
-		echo "not successful";
-	}
+class Admin {
+    private $conn;
+
+    public function __construct($db) {
+        $this->conn = $db;
+    }
+
+    public function register($adminid, $name, $email, $password) {
+        try {
+            // Hash the password
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+            // Prepare the statement
+            $sql = "INSERT INTO admins (adminid, name, email, password) VALUES (:adminid, :name, :email, :password)";
+            $stmt = $this->conn->prepare($sql);
+
+            // Bind parameters
+            $stmt->bindParam(":adminid", $adminid);
+            $stmt->bindParam(":name", $name);
+            $stmt->bindParam(":email", $email);
+            $stmt->bindParam(":password", $hashedPassword);
+
+            // Execute the query
+            if ($stmt->execute()) {
+                header("Location: alogin.php");
+                exit();
+            } else {
+                echo "Signup failed.";
+            }
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
 }
 
+// Handle the signup request
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $admin = new Admin($conn);
+    $admin->register($_POST['adminid'], $_POST['name'], $_POST['email'], $_POST['password']);
+}
 ?>
+
 
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="signup.css">
+	<link rel="stylesheet" href="/api_project/css/signup.css">
 	<script src="signup.js"></script>
 
 	<title> Admin Sign Up</title>
