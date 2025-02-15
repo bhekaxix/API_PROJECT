@@ -15,16 +15,13 @@ class Dashboard {
         }
     }
 
-    public function displayWelcomeMessage() {
-        echo "<h1>Welcome to Your Dashboard!</h1>";
-        echo "<p>Your account has been successfully verified.</p>";
-    }
+   
 }
 
 // Instantiate the Dashboard class and execute methods
 $dashboard = new Dashboard($_SESSION);
 $dashboard->checkSession();
-$dashboard->displayWelcomeMessage();
+
 
 ?>
 
@@ -33,7 +30,7 @@ $dashboard->displayWelcomeMessage();
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet"  href="/api_project/css/dashboard.css">
+	<link rel="stylesheet"  href="/api_project/css/home.css">
 	<title>Oil Refinery</title>
 </head>
 <body>
@@ -42,6 +39,7 @@ $dashboard->displayWelcomeMessage();
 		<div class="navlinks">
 			<ul>
 				<li><a class="navborder" href="dashboard.php">Home</a></li>
+				<li><a class="navborder" href="customer.php">Dashboard</a></li>
 				<li><a class="navborder" href="#">About Us</a></li>
         <li><a class="navborder" href="#">Contact Us</a></li>
 				

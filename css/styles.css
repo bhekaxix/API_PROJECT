@@ -38,15 +38,19 @@ body{
   border-bottom: 1px solid #bdb8d7;
   border-bottom: 1px solid rgba(0,0,0,0.05);
   border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
 }    
 
 .wrapper .sidebar ul li a{
   color: white;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.wrapper .sidebar ul li a .fas{
-  width: 25px;
+.wrapper .sidebar ul li a i{
+  font-size: 18px;
 }
 
 .wrapper .sidebar ul li:hover{

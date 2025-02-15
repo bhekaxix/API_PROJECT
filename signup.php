@@ -125,8 +125,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
  </div>
 </div>
     <div class="container">
-        <div class="form-container">
-            <h1 style="color: crimson;">Sign Up</h1>
+        <div class="signup-form">
+            <h1 style="color: #064663;">Sign Up</h1>
             <hr>
             <br>
             <br>

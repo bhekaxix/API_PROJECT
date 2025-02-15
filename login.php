@@ -139,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <div class="container">
         <div class="signup-form">
-            <h1 style="color: crimson; text-align: center;">Login</h1>
+            <h1 style="color: #064663; text-align: center;">Login</h1>
             <hr><br>
 
             <form action="login.php" method="POST">
