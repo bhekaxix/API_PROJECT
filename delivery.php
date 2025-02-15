@@ -40,95 +40,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delivery Form</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-        }
-        h2 {
-            text-align: center;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-        }
-        input[type="text"],
-        input[type="number"],
-        textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        textarea {
-            resize: vertical;
-        }
-        input[type="submit"] {
-            background-color: crimson;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: darkred;
-        }
-             .navbar {
-            display: flex;
-            justify-content: center;
-            background-color: crimson;
-            color: #fff;
-            padding: 10px 0;
-        }
-        .navbar a {
-            color: #fff;
-            text-decoration: none;
-            margin: 0 15px;
-        }
-    </style>
+    <link rel="stylesheet" href="/api_project/css/delivery.css">
 </head>
 <body>
-     <div class="navbar">
+    <div class="navbar">
         <a href="#">Home</a>
         <a href="#">Form</a>
         <a href="#">About Us</a>
         <a href="#">Contact Us</a>
     </div>
+
     <div class="container">
         <h2>Delivery Form</h2>
         <form method="post">
             <label>Address details:</label>
-            <input type="text" placeholder="House Number,Location Details,etc." id="address" name="address" required>
+            <input type="text" placeholder="House Number, Location Details, etc." id="address" name="address" required>
 
             <input type="text" placeholder="Business or building name" id="buildingname" name="buildingname" required>
 
-        <select type="text" name ="instructions" id="instructions" required>
-        <option value="">Delivery instructions</option>
-        <option value="Call when arrived">Call when arrived</option>
-        <option value="Message when arrived">Message when arrived</option>
-        </select><br><br>
-            Description:
+            <select name="instructions" id="instructions" required>
+                <option value="">Delivery instructions</option>
+                <option value="Call when arrived">Call when arrived</option>
+                <option value="Message when arrived">Message when arrived</option>
+            </select>
+
+            <label>Description:</label>
             <textarea id="description" name="description" rows="4" required></textarea>
 
             <input type="submit" value="Save">

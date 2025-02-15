@@ -39,6 +39,51 @@ if ($conn) { // Ensure $conn is set before querying
     <title>Customer Orders</title>
     <link rel="stylesheet" href="/api_project/css/styles.css">
     <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
+    <style>
+        .content-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #064663;
+            color: #ECB365;
+            border-radius: 10px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .table th, .table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #04293A;
+        }
+        .table th {
+            background: #04293A;
+        }
+        .action-icons {
+            display: flex;
+            gap: 10px;
+        }
+        .action-icons a {
+            color: #ECB365;
+            font-size: 18px;
+        }
+        .order-form {
+            margin-top: 30px;
+        }
+        .order-form input, .order-form button {
+            padding: 10px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        .order-form button {
+            background: #ECB365;
+            color: #04293A;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
@@ -54,8 +99,9 @@ if ($conn) { // Ensure $conn is set before querying
     </div>
 
     <div class="main_content">
-        <div class="info">
+        <div class="content-container">
             <h1 class="header">My Orders</h1>
+            
             <table class="table">
                 <thead>
                     <tr>
@@ -65,10 +111,10 @@ if ($conn) { // Ensure $conn is set before querying
                         <th>Total Price</th>
                         <th>Status</th>
                         <th>Order Date</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-
                 <?php if (!empty($orders)): ?>
                     <?php foreach ($orders as $order): ?>
                         <tr>
@@ -78,14 +124,24 @@ if ($conn) { // Ensure $conn is set before querying
                             <td><?= htmlspecialchars($order['total_price']) ?></td>
                             <td><?= htmlspecialchars($order['status']) ?></td>
                             <td><?= htmlspecialchars($order['order_date']) ?></td>
+                            <td class="action-icons">
+                                <a href="update_order.php?order_id=<?= $order['order_id'] ?>"><i class="fas fa-edit"></i></a>
+                                <a href="delete_order.php?order_id=<?= $order['order_id'] ?>" onclick="return confirm('Are you sure?');"><i class="fas fa-trash"></i></a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr><td colspan="6">No orders found.</td></tr>
+                    <tr><td colspan="7">No orders found.</td></tr>
                 <?php endif; ?>
-
                 </tbody>
             </table>
+
+            <form class="order-form" action="insert_order.php" method="POST">
+                <input type="text" name="product_name" placeholder="Product Name" required>
+                <input type="number" name="quantity" placeholder="Quantity" required>
+                <input type="text" name="total_price" placeholder="Total Price" required>
+                <button type="submit">Add Order</button>
+            </form>
         </div>
     </div>
 </div>

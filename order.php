@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <tr>
                     <td></td>
                     <td></td>
-                    <td><input type="submit" value="Order"></td>
+                    <td><input class ="btn" type="submit" value="Order"></td>
                 </tr>
             </table>
         </form>

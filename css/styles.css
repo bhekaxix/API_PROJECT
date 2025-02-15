@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap');
 
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -9,76 +9,136 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-body{
-   background-color: #f3f5f9;
+body {
+  background-color: #041C32;
 }
 
-.wrapper{
+.wrapper {
   display: flex;
   position: relative;
 }
 
-.wrapper .sidebar{
+/* Sidebar */
+.wrapper .sidebar {
   width: 200px;
   height: 100%;
-  background: crimson;
+  background: #04293A;
   padding: 30px 0px;
   position: fixed;
 }
 
-.wrapper .sidebar h2{
-  color: #fff;
+.wrapper .sidebar h2 {
+  color: #ECB365;
   text-transform: uppercase;
   text-align: center;
   margin-bottom: 30px;
 }
 
-.wrapper .sidebar ul li{
+.wrapper .sidebar ul li {
   padding: 15px;
-  border-bottom: 1px solid #bdb8d7;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-  border-top: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(236, 179, 101, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
 }    
 
-.wrapper .sidebar ul li a{
-  color: white;
+.wrapper .sidebar ul li a {
+  color: #ECB365;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.wrapper .sidebar ul li a i{
+.wrapper .sidebar ul li a i {
   font-size: 18px;
 }
 
-.wrapper .sidebar ul li:hover{
-  background-color: #594f8d;
+.wrapper .sidebar ul li:hover {
+  background-color: #064663;
 }
-    
-.wrapper .sidebar ul li:hover a{
-  color: #fff;
+
+.wrapper .sidebar ul li:hover a {
+  color: #ECB365;
 }
- 
-.wrapper .main_content{
+
+/* Main Content */
+.wrapper .main_content {
   width: 100%;
   margin-left: 200px;
-}
-
-.wrapper .main_content .header{
   padding: 20px;
-  background: #fff;
-  color: #717171;
-  border-bottom: 1px solid #e0e4e8;
 }
 
-.wrapper .main_content .info{
+.wrapper .main_content .header {
+  padding: 20px;
+  background: #064663;
+  color: #ECB365;
+  border-bottom: 1px solid #04293A;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.wrapper .main_content .info {
   margin: 20px;
-  color: #717171;
+  color: #ECB365;
   line-height: 25px;
 }
 
-.wrapper .main_content .info div{
+.wrapper .main_content .info div {
   margin-bottom: 20px;
+}
+
+/* Orders Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #04293A;
+  color: #ECB365;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table th, .table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #064663;
+}
+
+.table th {
+  background: #064663;
+  color: #ECB365;
+}
+
+.table tr:hover {
+  background: #041C32;
+}
+
+/* Actions Icons */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions a {
+  color: #ECB365;
+  font-size: 18px;
+}
+
+.actions a:hover {
+  color: #FFD580;
+}
+
+/* Add Product Button */
+.add-product {
+  display: inline-block;
+  background: #ECB365;
+  color: #041C32;
+  padding: 10px 15px;
+  margin-top: 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.add-product:hover {
+  background: #FFD580;
 }
