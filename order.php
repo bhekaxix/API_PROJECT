@@ -11,8 +11,15 @@ $user_id = $_SESSION['user_id']; // Get user ID from session
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $oiltype = $_POST['oiltype'];
-    $amount = $_POST['amount'];
-    $total_price = 400 * (int)$amount; // Assuming price per unit is 400
+    $amount = (int)$_POST['amount']; // Convert amount to integer
+
+    // Ensure amount is in multiples of 50 liters
+    if ($amount % 50 !== 0) {
+        die("Amount must be in multiples of 50 liters.");
+    }
+
+    // Calculate total price based on 400 per 50 liters
+    $total_price = ($amount / 50) * 400;
 
     try {
         // Ensure $conn is set
@@ -53,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Order Your Product</title>
     <link rel="stylesheet" href="/api_project/css/order.css">
-    <script src="order.js"></script>
 </head>
 <body>
     <div class="navbar">
@@ -65,12 +71,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <div class="container">
         <h1>Order Now!</h1>
-        <form method="post" name="order" onsubmit="return validateForm()">
+        <form method="post">
             <table align="center">
                 <tr>
                     <th></th>
                     <th>Oil Type</th>
-                    <th>Amount</th>
+                    <th>Amount (Liters)</th>
                     <th></th>
                 </tr>
                 <tr>
@@ -78,26 +84,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <td>
                         <input type="radio" value="Sunflower Oil" name="oiltype" required>Sunflower Oil
                     </td>
-                    <td><input type="number" name="amount" min="1" value="1" required></td>
+                    <td><input type="number" name="amount" min="50" step="50" value="50" required></td>
                 </tr>
                 <tr>
                     <td><img src="soya.jpg" width="150" height="150"></td>
                     <td>
                         <input type="radio" value="Soya Oil" name="oiltype" required>Soya Oil
                     </td>
-                    <td><input type="number" name="amount" min="1" value="1" required></td>
+                    <td><input type="number" name="amount" min="50" step="50" value="50" required></td>
                 </tr>
                 <tr>
                     <td><img src="vegetable.jpg" width="150" height="150"></td>
                     <td>
                         <input type="radio" value="Vegetable Oil" name="oiltype" required>Vegetable Oil
                     </td>
-                    <td><input type="number" name="amount" min="1" value="1" required></td>
+                    <td><input type="number" name="amount" min="50" step="50" value="50" required></td>
                 </tr>
                 <tr>
                     <td></td>
                     <td></td>
-                    <td><input class ="btn" type="submit" value="Order"></td>
+                    <td><input class="btn" type="submit" value="Order"></td>
                 </tr>
             </table>
         </form>
