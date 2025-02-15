@@ -1,35 +1,39 @@
 <?php
 include 'dbconnection.php';
 
+
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
     die("Unauthorized access.");
 }
 
-$user_id = $_SESSION['user_id']; // Get the logged-in user's ID
-$conn = (new DatabaseConnection('localhost', '2fa', 'root', ''))->connect();
+$user_id = $_SESSION['user_id'];
+$dbConnection = new DatabaseConnection('localhost', '2fa', 'root', '');
+$conn = $dbConnection->connect();
 
+if (!$conn) {
+    die("Database connection failed.");
+}
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['insert_order'])) {
+// Insert order if form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $product_name = $_POST['product_name'];
+    $quantity = $_POST['quantity'];
+    $total_price = $_POST['total_price'];
+    $status = "Pending"; // Default status
+
     try {
-        $product_name = $_POST['product_name'];
-        $quantity = $_POST['quantity'];
-        $total_price = $_POST['total_price'];
-        $status = 'Pending';
-        $order_date = date('Y-m-d H:i:s');
-
-        $sql = "INSERT INTO orders (user_id, product_name, quantity, total_price, status, order_date) 
-                VALUES (:user_id, :product_name, :quantity, :total_price, :status, :order_date)";
+        $sql = "INSERT INTO orders (user_id, product_name, quantity, total_price, status, order_date) VALUES (:user_id, :product_name, :quantity, :total_price, :status, NOW())";
         $stmt = $conn->prepare($sql);
-        $stmt->execute([
-            ':user_id' => $user_id,
-            ':product_name' => $product_name,
-            ':quantity' => $quantity,
-            ':total_price' => $total_price,
-            ':status' => $status,
-            ':order_date' => $order_date
-        ]);
-        header("Location: customer_orders.php");
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':product_name', $product_name);
+        $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
+        $stmt->bindParam(':total_price', $total_price);
+        $stmt->bindParam(':status', $status);
+        $stmt->execute();
+
+        header("Location: customer_orders.php?success=added");
+        exit();
     } catch (PDOException $e) {
         die("Error inserting order: " . $e->getMessage());
     }

@@ -1,4 +1,4 @@
-<?php 
+<?php  
 
 include 'dbconnection.php';
 
@@ -40,48 +40,33 @@ if ($conn) { // Ensure $conn is set before querying
     <link rel="stylesheet" href="/api_project/css/styles.css">
     <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
     <style>
-        .content-container {
-            max-width: 1000px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #064663;
-            color: #ECB365;
-            border-radius: 10px;
-        }
         .table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
         .table th, .table td {
-            padding: 15px;
+            padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #04293A;
+            border-bottom: 1px solid #ddd;
         }
-        .table th {
-            background: #04293A;
-        }
-        .action-icons {
+        .actions {
             display: flex;
             gap: 10px;
         }
-        .action-icons a {
-            color: #ECB365;
-            font-size: 18px;
-        }
-        .order-form {
-            margin-top: 30px;
-        }
-        .order-form input, .order-form button {
-            padding: 10px;
-            margin-right: 10px;
+        .actions button {
+            padding: 8px 12px;
             border: none;
+            cursor: pointer;
             border-radius: 5px;
         }
-        .order-form button {
-            background: #ECB365;
-            color: #04293A;
-            cursor: pointer;
+        .edit-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .delete-btn {
+            background-color: #FF5733;
+            color: white;
         }
     </style>
 </head>
@@ -91,17 +76,16 @@ if ($conn) { // Ensure $conn is set before querying
     <div class="sidebar">
         <h2>Customer</h2>
         <ul>
-            <li><a href="customer_orders.php"><i class="fas fa-box"></i> My Orders</a></li>
+            <li><a href="customer.php"><i class="fas fa-box"></i> My Orders</a></li>
             <li><a href="dashboard.php"><i class="fas fa-user"></i> Profile</a></li>
             <li><a href="#"><i class="fas fa-address-book"></i> Contact</a></li>
-            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <li><a href="login.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul> 
     </div>
 
     <div class="main_content">
-        <div class="content-container">
+        <div class="info">
             <h1 class="header">My Orders</h1>
-            
             <table class="table">
                 <thead>
                     <tr>
@@ -124,9 +108,18 @@ if ($conn) { // Ensure $conn is set before querying
                             <td><?= htmlspecialchars($order['total_price']) ?></td>
                             <td><?= htmlspecialchars($order['status']) ?></td>
                             <td><?= htmlspecialchars($order['order_date']) ?></td>
-                            <td class="action-icons">
-                                <a href="update_order.php?order_id=<?= $order['order_id'] ?>"><i class="fas fa-edit"></i></a>
-                                <a href="delete_order.php?order_id=<?= $order['order_id'] ?>" onclick="return confirm('Are you sure?');"><i class="fas fa-trash"></i></a>
+                            <td class="actions">
+                                <!-- Update Button -->
+                                <form action="update_order.php" method="GET" style="display:inline;">
+                                    <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
+                                    <button type="submit" class="edit-btn">Update</button>
+                                </form>
+                                <!-- Delete Button -->
+                                <form action="delete_order.php" method="POST" style="display:inline;" 
+                                      onsubmit="return confirm('Are you sure you want to delete this order?');">
+                                    <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
+                                    <button type="submit" class="delete-btn">Delete</button>
+                                </form>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -135,13 +128,6 @@ if ($conn) { // Ensure $conn is set before querying
                 <?php endif; ?>
                 </tbody>
             </table>
-
-            <form class="order-form" action="insert_order.php" method="POST">
-                <input type="text" name="product_name" placeholder="Product Name" required>
-                <input type="number" name="quantity" placeholder="Quantity" required>
-                <input type="text" name="total_price" placeholder="Total Price" required>
-                <button type="submit">Add Order</button>
-            </form>
         </div>
     </div>
 </div>
