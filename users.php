@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['remove_user'])) {
             <li><a href="adminpanel.php"><i class="fas fa-shopping-cart"></i> Orders</a></li>
             <li><a href="users.php"><i class="fas fa-users"></i> Users</a></li>
             <li><a href="analytics.php"><i class="fas fa-chart-line"></i> Analytics</a></li>
-            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <li><a href="alogin.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul> 
     </div>
 
