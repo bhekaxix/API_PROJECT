@@ -35,8 +35,8 @@ class OTPVerification {
     }
 
     public function getUserById($userId) {
-        $stmt = $this->conn->prepare("SELECT * FROM users WHERE id = :id");
-        $stmt->execute([':id' => $userId]);
+        $stmt = $this->conn->prepare("SELECT * FROM users WHERE user_id = :user_id"); // ✅ Fixed column name
+        $stmt->execute([':user_id' => $userId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -51,12 +51,12 @@ class OTPVerification {
     }
 
     public function clearOTP($userId) {
-        $stmt = $this->conn->prepare("UPDATE users SET otp_code = NULL, otp_expiration = NULL WHERE id = :id");
-        $stmt->execute([':id' => $userId]);
+        $stmt = $this->conn->prepare("UPDATE users SET otp_code = NULL, otp_expiration = NULL WHERE user_id = :user_id"); // ✅ Fixed column name
+        $stmt->execute([':user_id' => $userId]);
     }
 }
 
-// Main Logic
+// **Ensure user is logged in**
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
@@ -78,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -116,4 +115,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

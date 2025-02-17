@@ -1,4 +1,4 @@
-<?php
+<?php 
 session_start();
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -53,11 +53,12 @@ class UserLogin {
         $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         $otpExpiration = date('Y-m-d H:i:s', strtotime('+5 minutes'));
 
-        $stmt = $this->conn->prepare("UPDATE users SET otp_code = :otp_code, otp_expiration = :otp_expiration WHERE id = :id");
+        // **Fixed: Use user_id instead of id**
+        $stmt = $this->conn->prepare("UPDATE users SET otp_code = :otp_code, otp_expiration = :otp_expiration WHERE user_id = :user_id");
         $stmt->execute([
             ':otp_code' => $otp,
             ':otp_expiration' => $otpExpiration,
-            ':id' => $userId
+            ':user_id' => $userId
         ]);
 
         return $otp;
@@ -67,21 +68,20 @@ class UserLogin {
         $mail = new PHPMailer(true);
 
         try {
-            // Server settings
+            // **SMTP Configuration**
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'taongabp@gmail.com'; // Replace with your email
-            $mail->Password   = 'xjguxbwosrfxpkop'; // Replace with your app-specific password
+            $mail->Username   = 'taongabp@gmail.com'; // **Replace with your email**
+            $mail->Password   = 'xjguxbwosrfxpkop';  // **Use an App Password, NOT your main password**
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port       = 465;
 
-            // Recipient settings
+            // **Recipient settings**
             $mail->setFrom('taongabp@gmail.com', 'BBIT Exempt');
-            $mail->addAddress($recipientEmail, $recipientName); // Use user's email
+            $mail->addAddress($recipientEmail, $recipientName); // **User's email**
 
-
-            // Email content
+            // **Email content**
             $mail->isHTML(true);
             $mail->Subject = 'Your Verification Code';
             $mail->Body    = "Your OTP code is: <strong>$otp</strong>. It expires in 5 minutes.";
@@ -93,7 +93,7 @@ class UserLogin {
     }
 }
 
-// Main Logic
+// **Main Logic**
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dbConnection = new DatabaseConnection('localhost', '2fa', 'root', '');
     $conn = $dbConnection->connect();
@@ -106,18 +106,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $userLogin->authenticate($username, $password);
 
     if ($user) {
-        $otp = $userLogin->updateOTP($user['id']);
+        $otp = $userLogin->updateOTP($user['user_id']);
         $userLogin->sendOtpEmail($user['email'], $user['username'], $otp);
 
+        // **Fixed: Store correct user ID in session**
+        $_SESSION['user_id'] = $user['user_id'];
 
-        $_SESSION['user_id'] = $user['id'];
         header('Location: verification_login.php');
         exit();
     } else {
-        echo "Invalid username or password.";
+        echo "<script>alert('Invalid username or password.');</script>";
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -128,41 +130,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 <div class="nav">
-		<div class="logo"><h2>oIlR</h2></div>
-			<div class="navlinks">
-	<ul>
-		<li><a href="home.php" class="navborder">Home</a></li>
-		<li><a href="signup.php" class="navborder">Sign Up</a></li>
-  </ul>
- </div>
+	<div class="logo"><h2>oIlR</h2></div>
+		<div class="navlinks">
+		<ul>
+			<li><a href="home.php" class="navborder">Home</a></li>
+			<li><a href="signup.php" class="navborder">Sign Up</a></li>
+		</ul>
+	</div>
 </div>
-    
-    <div class="container">
-        <div class="signup-form">
-            <h1 style="color: #064663; text-align: center;">Login</h1>
-            <hr><br>
 
-            <form action="login.php" method="POST">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+<div class="container">
+    <div class="signup-form">
+        <h1 style="color: #064663; text-align: center;">Login</h1>
+        <hr><br>
 
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <form action="login.php" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required>
 
-                <button type="submit" class="signup">Login</button>
-            </form>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
 
-            <p style="text-align: center;">
-                Don't have an account? <a href="signup.php" class="btn-login">Sign up here</a>.
-            </p>
-            <br>
-            <div class="forget">
-                <a href="forgot_password.php">Forgot Password?</a>
-            </div>
+            <button type="submit" class="signup">Login</button>
+        </form>
+
+        <p style="text-align: center;">
+            Don't have an account? <a href="signup.php" class="btn-login">Sign up here</a>.
+        </p>
+        <br>
+        <div class="forget">
+            <a href="forgot_password.php">Forgot Password?</a>
         </div>
     </div>
+</div>
 
 </body>
 </html>
-
-

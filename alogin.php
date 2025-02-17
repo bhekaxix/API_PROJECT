@@ -1,4 +1,5 @@
 <?php
+
 include 'dbconnection.php';
 
 class AdminLogin {
@@ -13,79 +14,105 @@ class AdminLogin {
             // Retrieve user by email
             $sql = "SELECT * FROM admins WHERE email = :email";
             $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(":email", $email);
+            $stmt->bindParam(":email", $email, PDO::PARAM_STR);
             $stmt->execute();
             $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // Verify password
             if ($admin && password_verify($password, $admin['password'])) {
-                session_start();
                 $_SESSION['adminid'] = $admin['adminid'];
-               
-                header("Location: dashboard.php");  // Redirect to admin dashboard
+                header("Location: adminpanel.php");  // Redirect to admin dashboard
                 exit();
             } else {
-                echo "Invalid credentials!";
+                $GLOBALS['errorMessage'] = "Invalid email or password!";
             }
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            $GLOBALS['errorMessage'] = "Error: " . $e->getMessage();
         }
     }
 }
 
 // Handle login request
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $adminLogin = new AdminLogin($conn);
-    $adminLogin->login($_POST['email'], $_POST['password']);
+    $email = $_POST['email'] ?? null;
+    $password = $_POST['password'] ?? null;
+
+    if (!empty($email) && !empty($password)) {
+        $adminLogin = new AdminLogin($conn);
+        $adminLogin->login($email, $password);
+    } else {
+        $GLOBALS['errorMessage'] = "Please enter both email and password!";
+    }
 }
 ?>
 
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="/api_project/css/signup.css">
-	<script src="signup.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/api_project/css/signup.css">
+    <script>
+        function validateLogin() {
+            let email = document.getElementById("email").value.trim();
+            let password = document.getElementById("password").value.trim();
+            let valid = true;
 
-	<title> Admin Login</title>
+            if (email === "") {
+                document.getElementById("errorEmail").innerText = "Email is required!";
+                valid = false;
+            } else {
+                document.getElementById("errorEmail").innerText = "";
+            }
+
+            if (password === "") {
+                document.getElementById("errorPassword").innerText = "Password is required!";
+                valid = false;
+            } else {
+                document.getElementById("errorPassword").innerText = "";
+            }
+
+            return valid;
+        }
+    </script>
+    <title>Admin Login</title>
 </head>
 <body>
-	<div class="nav">
-		<div class="logo"><h2>oIlR</h2></div>
-			<div class="navlinks">
-	<ul>
-		<li><a href="home.php" class="navborder">Home</a></li>
-		<li><a href="asignup.php" class="navborder">Sign Up</a></li>
-  </ul>
- </div>
-</div>
+    <div class="nav">
+        <div class="logo"><h2>oIlR</h2></div>
+        <div class="navlinks">
+            <ul>
+                <li><a href="home.php" class="navborder">Home</a></li>
+                <li><a href="asignup.php" class="navborder">Sign Up</a></li>
+            </ul>
+        </div>
+    </div>
 
-<div class="container">
-	<form method="post" id="signupForm" onsubmit="return validateForm()" class="signup-form">
-		<h2 style="color: crimson;">Login</h2>
-		<hr>
-		<br>
-		<br>
-		AdminID:<input type="varchar" placeholder="Enter your AminID" name="adminid"id="adminid" required><div class="error" id="errorContact"></div>
-		
-		Password:<input type="password" placeholder="Enter your Password" name="password" id="password"><div class="error" id="errorPassword" required></div>
-		<input type="submit" class ="signup" name="SignUp" value="Login">
-		<br>
-		<br>
-		<hr>
-		<br>
-		<div class="forget">
-			<div><p>Sign Up</p>
-			Click <a href="asignup.php">here</a>
-		</div>
+    <div class="container">
+        <form method="post" id="loginForm" onsubmit="return validateLogin()" class="signup-form">
+            <h2 style="color: crimson;">Admin Login</h2>
+            <hr><br><br>
 
+            <?php if (!empty($errorMessage)) { ?>
+                <div style="color: red; font-weight: bold;"><?php echo $errorMessage; ?></div>
+                <br>
+            <?php } ?>
 
-	</form>
-		
-		
-			
-		
+            Email:
+            <input type="email" placeholder="Enter your Email" name="email" id="email" required>
+            <div class="error" id="errorEmail"></div>
+
+            Password:
+            <input type="password" placeholder="Enter your Password" name="password" id="password" required>
+            <div class="error" id="errorPassword"></div>
+
+            <input type="submit" class="signup" name="Login" value="Login">
+            <br><br><hr><br>
+
+            <div class="forget">
+                <p>Don't have an account? Click <a href="asignup.php">here</a> to Sign Up.</p>
+            </div>
+        </form>
+    </div>
 </body>
 </html>
