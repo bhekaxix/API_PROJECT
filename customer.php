@@ -1,6 +1,6 @@
 <?php  
-
 include 'dbconnection.php';
+
 
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -68,6 +68,10 @@ if ($conn) { // Ensure $conn is set before querying
             background-color: #FF5733;
             color: white;
         }
+        .disabled-btn {
+            background-color: gray;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -79,7 +83,7 @@ if ($conn) { // Ensure $conn is set before querying
             <li><a href="customer.php"><i class="fas fa-box"></i> My Orders</a></li>
             <li><a href="dashboard.php"><i class="fas fa-user"></i> Profile</a></li>
             <li><a href="#"><i class="fas fa-address-book"></i> Contact</a></li>
-            <li><a href="login.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul> 
     </div>
 
@@ -109,17 +113,32 @@ if ($conn) { // Ensure $conn is set before querying
                             <td><?= htmlspecialchars($order['status']) ?></td>
                             <td><?= htmlspecialchars($order['order_date']) ?></td>
                             <td class="actions">
-                                <!-- Update Button -->
-                                <form action="update_order.php" method="GET" style="display:inline;">
-                                    <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
-                                    <button type="submit" class="edit-btn">Update</button>
-                                </form>
-                                <!-- Delete Button -->
-                                <form action="delete_order.php" method="POST" style="display:inline;" 
-                                      onsubmit="return confirm('Are you sure you want to delete this order?');">
-                                    <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
-                                    <button type="submit" class="delete-btn">Delete</button>
-                                </form>
+                                <?php if ($order['status'] == 'Shipped'): ?>
+                                    <!-- Disabled Update Button with Alert -->
+                                    <button type="button" class="edit-btn disabled-btn" 
+                                        onclick="alert('⚠️ Cannot perform this action. Order has been shipped.');">
+                                        Update
+                                    </button>
+
+                                    <!-- Disabled Delete Button with Alert -->
+                                    <button type="button" class="delete-btn disabled-btn" 
+                                        onclick="alert('⚠️ Cannot perform this action. Order has been shipped.');">
+                                        Remove
+                                    </button>
+                                <?php else: ?>
+                                    <!-- Update Button -->
+                                    <form action="update_order.php" method="GET" style="display:inline;">
+                                        <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
+                                        <button type="submit" class="edit-btn">Update</button>
+                                    </form>
+
+                                    <!-- Delete Button -->
+                                    <form action="delete_order.php" method="POST" style="display:inline;" 
+                                          onsubmit="return confirm('Are you sure you want to delete this order?');">
+                                        <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
+                                        <button type="submit" class="delete-btn">Remove</button>
+                                    </form>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

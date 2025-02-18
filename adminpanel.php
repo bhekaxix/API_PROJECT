@@ -59,12 +59,12 @@ try {
                         <td><?= htmlspecialchars($order['product_name']) ?></td>
                         <td class="actions">
                             <!-- Status Dropdown -->
-                            <form action="update_status.php" method="POST" style="display:inline;">
+                            <form action="status.php" method="POST" style="display:inline;">
                                 <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
                                 <select name="status" onchange="this.form.submit()">
                                     <option value="Pending" <?= $order['status'] == 'Pending' ? 'selected' : '' ?>>Pending</option>
-                                    <option value="Shipped" <?= $order['status'] == 'Shipped' ? 'selected' : '' ?>>Shipped</option>
-                                    <option value="Checked" <?= $order['status'] == 'Checked' ? 'selected' : '' ?>>Checked</option>
+                                    <option value="Shipped" <?= $order['status'] == 'Shipped' ? 'selected' : '' ?>>Checked</option>
+                                    
                                 </select>
                             </form>
                         </td>

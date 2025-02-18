@@ -11,24 +11,6 @@ try {
     die("Query failed: " . $e->getMessage());
 }
 
-// Insert User
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_user'])) {
-    try {
-        $sql = "INSERT INTO users (firstname, lastname, email, password) VALUES (:firstname, :lastname, :email, :password)";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([
-            'firstname' => $_POST['firstname'],
-            'lastname' => $_POST['lastname'],
-            'email' => $_POST['email'],
-            'password' => password_hash($_POST['password'], PASSWORD_BCRYPT)
-        ]);
-        header("Location: users.php");
-        exit();
-    } catch (PDOException $e) {
-        die("Insertion failed: " . $e->getMessage());
-    }
-}
-
 // Remove User
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['remove_user'])) {
     try {
@@ -66,24 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['remove_user'])) {
 
     <div class="main_content">
         <h1 class="header">User Management</h1>
-
-        <!-- Add User Form -->
-        <div class="form-container">
-            <h2>Add New User</h2>
-            <form method="post" class="add-user-form">
-                <input type="text" name="firstname" placeholder="First Name" required>
-                <input type="text" name="lastname" placeholder="Last Name" required>
-                <input type="email" name="email" placeholder="Email" required>
-                
-                <button type="submit" name="add_user" class="btn btn-success">Add User</button>
-            </form>
-        </div>
-        <br>
-        <br>
-
         <!-- Users Table -->
         <div class="users-table">
-            <h2>Existing Users</h2>
             <table class="table">
                 <thead>
                     <tr>
