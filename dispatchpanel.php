@@ -1,8 +1,9 @@
-<?php
+<?php 
 require_once 'dbconnection.php'; // Ensure we use the PDO connection
 
 try {
-    $sql = "SELECT * FROM checkedorders";
+    // Fetching all checked orders from the database
+    $sql = "SELECT order_id, user_id, product_name, quantity, total_price, status, order_date FROM checkedorders";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -26,8 +27,7 @@ try {
         <h2>Dispatcher</h2>
         <ul>
             <li><a href="checkedorders.php"><i class="fas fa-project-diagram"></i> Checked Orders</a></li>
-            <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
-            <li><a href="#"><i class="fas fa-home"></i> Logout</a></li>
+            <li><a href="dlogin"><i class="fas fa-home"></i> Logout</a></li>
         </ul> 
     </div>
 
@@ -38,24 +38,29 @@ try {
                 <thead>
                     <tr>
                         <th scope="col">OrderID</th>
-                        <th scope="col">Name</th>
+                        <th scope="col">UserID</th>
+                        <th scope="col">Product Name</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total Price</th>
+                        <th scope="col">Status</th>
                         <th scope="col">Order Date</th>
-                        <th scope="col">Amount</th>
-                        <th scope="col">Oil Type</th>
                         <th scope="col">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($orders as $row): ?>
                         <tr>
-                            <td><?= htmlspecialchars($row['orderid']) ?></td>
-                            <td><?= htmlspecialchars($row['name']) ?></td>
-                            <td><?= htmlspecialchars($row['orderdate']) ?></td>
-                            <td><?= htmlspecialchars($row['amount']) ?></td>
-                            <td><?= htmlspecialchars($row['oiltype']) ?></td>
+                            <td><?= htmlspecialchars($row['order_id']) ?></td>
+                            <td><?= htmlspecialchars($row['user_id']) ?></td>
+                            <td><?= htmlspecialchars($row['product_name']) ?></td>
+                            <td><?= htmlspecialchars($row['quantity']) ?></td>
+                            <td><?= htmlspecialchars($row['total_price']) ?></td>
+                            <td><?= htmlspecialchars($row['status']) ?></td>
+                            <td><?= htmlspecialchars($row['order_date']) ?></td>
                             <td>
+                                <!-- Form to mark an order as ready for packaging -->
                                 <form action="packagingprocess.php" method="post">
-                                    <input type="hidden" name="orderid" value="<?= htmlspecialchars($row['orderid']) ?>">
+                                    <input type="hidden" name="orderid" value="<?= htmlspecialchars($row['order_id']) ?>">
                                     <button type="submit" name="readyForPackaging">Ready for Packaging</button>
                                 </form>
                             </td>
