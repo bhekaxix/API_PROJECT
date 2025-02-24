@@ -30,6 +30,7 @@ try {
         <ul>
             <li><a href="adminpanel.php"><i class="fas fa-users"></i> Orders</a></li>
             <li><a href="users.php"><i class="fas fa-users"></i> Users</a></li>
+            <li><a href="items.php"><i class="fas fa-users"></i> Items</a></li>
             <li><a href="analytics.php"><i class="fas fa-chart-line"></i> Analytics</a></li>
             <li><a href="alogin.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul> 
@@ -63,7 +64,7 @@ try {
                                 <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
                                 <select name="status" onchange="this.form.submit()">
                                     <option value="Pending" <?= $order['status'] == 'Pending' ? 'selected' : '' ?>>Pending</option>
-                                    <option value="Shipped" <?= $order['status'] == 'Shipped' ? 'selected' : '' ?>>Checked</option>
+                                    <option value="Shipped" <?= $order['status'] == 'Shipped' ? 'selected' : '' ?>>Shipped</option>
                                     
                                 </select>
                             </form>
