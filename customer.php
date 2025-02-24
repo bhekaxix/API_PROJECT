@@ -88,7 +88,7 @@ try {
             <li><a href="customer.php"><i class="fas fa-box"></i> My Orders</a></li>
             <li><a href="dashboard.php"><i class="fas fa-user"></i> Profile</a></li>
             <li><a href="#"><i class="fas fa-address-book"></i> Contact</a></li>
-            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <li><a href="login.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul> 
     </div>
 
