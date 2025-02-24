@@ -1,6 +1,8 @@
 <?php
 require 'vendor/autoload.php';
+session_start(); // Start session for CSRF protection
 
+// Database Connection Class
 class Database {
     private $host = 'localhost';
     private $dbname = '2fa';
@@ -22,6 +24,7 @@ class Database {
     }
 }
 
+// Password Reset Class
 class PasswordReset {
     private $conn;
 
@@ -36,23 +39,24 @@ class PasswordReset {
                 die("Password hashing failed.");
             }
 
-            $stmt = $this->conn->prepare("UPDATE users SET password = :password WHERE email = :email");
+            $stmt = $this->conn->prepare("UPDATE users SET password_hash = :password WHERE email = :email");
             $stmt->bindParam(':password', $hashedPassword);
             $stmt->bindParam(':email', $email);
             $stmt->execute();
 
-            if ($stmt->rowCount() > 0) {
-                return true;  // Password updated successfully
-            } else {
-                return false; // No rows affected, possibly incorrect email
-            }
+            return $stmt->rowCount() > 0; // Returns true if the password was updated
         } catch (PDOException $e) {
-            return false; // Error during query execution
+            return false;
         }
     }
 }
 
+// CSRF Token Check
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_SESSION['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF token mismatch.");
+    }
+
     $database = new Database();
     $conn = $database->getConnection();
     $passwordReset = new PasswordReset($conn);
@@ -62,13 +66,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newPassword = $_POST['new_password'];
 
         if ($passwordReset->updatePassword($email, $newPassword)) {
-            // Redirect to login page after successful password update
-            header("Location: login.php");
+            session_destroy(); // Destroy session after successful reset
+            header("Location: login.php?status=success");
             exit();
         } else {
             echo "Error updating password.";
         }
     }
+}
+
+// Generate CSRF Token
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 ?>
 
@@ -84,7 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form action="update_password.php" method="POST">
         <?php $email = htmlspecialchars($_GET['email'] ?? ''); ?>
         <input type="hidden" name="email" value="<?php echo $email; ?>">
-        
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+
         <label for="new_password">New Password:</label>
         <input type="password" id="new_password" name="new_password" required><br><br>
         
