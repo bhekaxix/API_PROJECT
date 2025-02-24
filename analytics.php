@@ -161,7 +161,7 @@ if (isset($_GET['download'])) {
         </div>
 
         <div class="analytics-box">
-            <a href="?download=true" class="download-btn">Download Stats as CSV</a>
+            <a href="download_pdf.php" class="download-btn">Download</a>
         </div>
     </div>
 </div>

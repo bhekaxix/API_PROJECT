@@ -1,6 +1,8 @@
 <?php
 require_once 'dbconnection.php'; // Ensure database connection
-require_once 'tcpdf/tcpdf.php'; // Include TCPDF
+require_once 'vendor/autoload.php';
+
+
 
 // Fetch analytics data
 try {
