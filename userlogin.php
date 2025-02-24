@@ -22,7 +22,7 @@
 
 <div class="container">
 	<form class="signup-form">
-		<h2 style="color: crimson;">Login as:</h2>
+		<h2>Login as:</h2>
 		<hr>
 		<br>
 		
