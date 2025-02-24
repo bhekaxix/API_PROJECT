@@ -83,7 +83,7 @@ class PasswordReset {
             $mail->Port       = 465;
 
             // Recipient settings
-            $mail->setFrom('taongabp@gmail.com', 'BBIT Exempt');
+            $mail->setFrom('taongabp@gmail.com', 'OIILRefinery');
             $mail->addAddress($recipientEmail, $recipientName); // Use user's email
 
             $mail->isHTML(true);

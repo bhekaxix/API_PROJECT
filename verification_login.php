@@ -51,7 +51,7 @@ class OTPVerification {
     }
 
     public function clearOTP($userId) {
-        $stmt = $this->conn->prepare("UPDATE users SET otp_code = NULL, otp_expiration = NULL WHERE user_id = :user_id"); // ✅ Fixed column name
+        $stmt = $this->conn->prepare("UPDATE users SET otp_code = NULL, otp_expiration = NULL WHERE user_id = :user_id"); 
         $stmt->execute([':user_id' => $userId]);
     }
 }
