@@ -1,6 +1,6 @@
 <?php
-
 include 'dbconnection.php';
+
 
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -22,9 +22,9 @@ if (!isset($_GET['order_id'])) {
 
 $order_id = $_GET['order_id'];
 
-// Fetch order details
+// Fetch current order details
 try {
-    $sql = "SELECT orders.order_id, orders.item_id, orders.quantity, orders.total_price, items.product_name 
+    $sql = "SELECT orders.order_id, orders.item_id, orders.quantity, orders.total_price, items.product_name, items.stock 
             FROM orders
             INNER JOIN items ON orders.item_id = items.item_id
             WHERE orders.order_id = :order_id AND orders.user_id = :user_id";
@@ -42,38 +42,63 @@ try {
     die("Error fetching order: " . $e->getMessage());
 }
 
-// Fetch available products from the `items` table
-try {
-    $sql = "SELECT item_id, product_name FROM items";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    die("Error fetching products: " . $e->getMessage());
-}
-
 // Update order if form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $item_id = $_POST['item_id'];
-    $quantity = $_POST['quantity'];
-    
-    // Calculate total price based on fixed rate
-    $total_price = ($quantity / 50) * 400;
-
     try {
-        $sql = "UPDATE orders SET item_id = :item_id, quantity = :quantity, total_price = :total_price 
-                WHERE order_id = :order_id AND user_id = :user_id";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':item_id', $item_id, PDO::PARAM_INT);
-        $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
-        $stmt->bindParam(':total_price', $total_price);
-        $stmt->bindParam(':order_id', $order_id, PDO::PARAM_INT);
-        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->execute();
+        $new_quantity = (int)$_POST['quantity']; // Convert to integer
+        
+        // Ensure quantity is a multiple of 50 liters
+        if ($new_quantity % 50 !== 0) {
+            throw new Exception("Quantity must be in multiples of 50 liters.");
+        }
+
+        // Calculate stock units (50 liters = 1 stock unit)
+        $new_stock_units = $new_quantity / 50;
+        $old_stock_units = $order['quantity'] / 50;
+
+        // Fetch current stock
+        $stmt = $conn->prepare("SELECT stock FROM items WHERE item_id = :item_id");
+        $stmt->execute(['item_id' => $order['item_id']]);
+        $item = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$item) {
+            throw new Exception("Product not found.");
+        }
+
+        $current_stock = $item['stock'];
+
+        $conn->beginTransaction();
+
+        // If increasing quantity, check stock availability
+        if ($new_stock_units > $old_stock_units) {
+            $stock_needed = $new_stock_units - $old_stock_units;
+            if ($current_stock < $stock_needed) {
+                throw new Exception("Not enough stock available.");
+            }
+            // Deduct stock
+            $stmt = $conn->prepare("UPDATE items SET stock = stock - :stock_needed WHERE item_id = :item_id");
+            $stmt->execute(['stock_needed' => $stock_needed, 'item_id' => $order['item_id']]);
+        }
+
+        // Calculate new total price
+        $new_total_price = $new_stock_units * 400;
+
+        // Update the order
+        $stmt = $conn->prepare("UPDATE orders SET quantity = :quantity, total_price = :total_price 
+                                WHERE order_id = :order_id AND user_id = :user_id");
+        $stmt->execute([
+            'quantity' => $new_quantity,
+            'total_price' => $new_total_price,
+            'order_id' => $order_id,
+            'user_id' => $user_id
+        ]);
+
+        $conn->commit();
 
         header("Location: customer.php?success=updated");
         exit();
-    } catch (PDOException $e) {
+    } catch (Exception $e) {
+        $conn->rollBack();
         die("Error updating order: " . $e->getMessage());
     }
 }
@@ -97,13 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h2>Update Order</h2>
     <form method="POST">
         <label>Product Name:</label>
-        <select name="item_id" required>
-            <?php foreach ($products as $product): ?>
-                <option value="<?= $product['item_id'] ?>" <?= $order['item_id'] == $product['item_id'] ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($product['product_name']) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
+        <input type="text" value="<?= htmlspecialchars($order['product_name']) ?>" disabled>
 
         <label>Quantity (Liters):</label>
         <input type="number" name="quantity" value="<?= htmlspecialchars($order['quantity']) ?>" required min="50" step="50">

@@ -1,6 +1,6 @@
 <?php
-
 require 'dbconnection.php'; // Ensure database connection
+
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -17,35 +17,58 @@ class Order {
         $this->conn = $conn;
     }
 
-    public function placeOrder($user_id, $item_id, $amount) {
+    public function placeOrder($user_id, $item_id, $liters) {
         // Ensure amount is in multiples of 50 liters
-        if ($amount % 50 !== 0) {
+        if ($liters % 50 !== 0) {
             throw new Exception("Amount must be in multiples of 50 liters.");
         }
 
-        // Calculate total price (400 per 50 liters)
-        $total_price = ($amount / 50) * 400;
+        // Convert liters to stock units (50 liters = 1 unit)
+        $stock_units = $liters / 50;
 
         try {
-            $sql = "INSERT INTO orders (user_id, item_id, quantity, total_price) 
-                    VALUES (:user_id, :item_id, :amount, :total_price)";
-            $stmt = $this->conn->prepare($sql);
+            $this->conn->beginTransaction();
 
-            // Bind parameters
-            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-            $stmt->bindParam(':item_id', $item_id, PDO::PARAM_INT);
-            $stmt->bindParam(':amount', $amount, PDO::PARAM_INT);
-            $stmt->bindParam(':total_price', $total_price, PDO::PARAM_STR);
+            // Check stock availability
+            $stmt = $this->conn->prepare("SELECT stock FROM items WHERE item_id = :item_id");
+            $stmt->execute(['item_id' => $item_id]);
+            $item = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Execute query
-            if ($stmt->execute()) {
-                header("Location: delivery.php");
-                exit();
-            } else {
-                throw new Exception("Order submission failed.");
+            if (!$item) {
+                throw new Exception("Item not found.");
             }
-        } catch (PDOException $e) {
-            throw new Exception("Database error: " . $e->getMessage());
+
+            if ($item['stock'] < $stock_units) {
+                throw new Exception("Insufficient stock available.");
+            }
+
+            // Calculate total price (400 per 50 liters)
+            $total_price = $stock_units * 400;
+
+            // Insert order into the orders table
+            $stmt = $this->conn->prepare("INSERT INTO orders (user_id, item_id, quantity, total_price, status, order_date) 
+                                          VALUES (:user_id, :item_id, :quantity, :total_price, 'Pending', NOW())");
+            $stmt->execute([
+                'user_id' => $user_id,
+                'item_id' => $item_id,
+                'quantity' => $liters, // Store liters ordered
+                'total_price' => $total_price
+            ]);
+
+            // Reduce stock based on stock units (not liters)
+            $stmt = $this->conn->prepare("UPDATE items SET stock = stock - :stock_units WHERE item_id = :item_id");
+            $stmt->execute([
+                'stock_units' => $stock_units,
+                'item_id' => $item_id
+            ]);
+
+            $this->conn->commit();
+
+            header("Location: delivery.php");
+            exit();
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            throw new Exception("Error processing order: " . $e->getMessage());
         }
     }
 }
@@ -58,12 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         $oiltype = $_POST['oiltype'];
-        $amount = (int)$_POST['amount']; // Convert to integer
+        $liters = (int)$_POST['amount']; // Convert to integer
 
-        // Mapping oil types to item_id (assumes 'items' table exists)
+        // Mapping oil types to item_id
         $oil_mapping = [
-            "Sunflower Oil" => 1,
-            "Soya Oil" => 2,
+            "Sunflower Oil" => 2,
+            "Soya Oil" => 1,
             "Vegetable Oil" => 3
         ];
 
@@ -75,13 +98,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Place order
         $order = new Order($conn);
-        $order->placeOrder($user_id, $item_id, $amount);
+        $order->placeOrder($user_id, $item_id, $liters);
 
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
