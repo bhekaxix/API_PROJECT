@@ -9,44 +9,74 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id']; // Get user ID from session
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $oiltype = $_POST['oiltype'];
-    $amount = (int)$_POST['amount']; // Convert amount to integer
+// Class for handling orders
+class Order {
+    private $conn;
 
-    // Ensure amount is in multiples of 50 liters
-    if ($amount % 50 !== 0) {
-        die("Amount must be in multiples of 50 liters.");
+    public function __construct($conn) {
+        $this->conn = $conn;
     }
 
-    // Calculate total price based on 400 per 50 liters
-    $total_price = ($amount / 50) * 400;
+    public function placeOrder($user_id, $item_id, $amount) {
+        // Ensure amount is in multiples of 50 liters
+        if ($amount % 50 !== 0) {
+            throw new Exception("Amount must be in multiples of 50 liters.");
+        }
 
+        // Calculate total price (400 per 50 liters)
+        $total_price = ($amount / 50) * 400;
+
+        try {
+            $sql = "INSERT INTO orders (user_id, item_id, quantity, total_price) 
+                    VALUES (:user_id, :item_id, :amount, :total_price)";
+            $stmt = $this->conn->prepare($sql);
+
+            // Bind parameters
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $stmt->bindParam(':item_id', $item_id, PDO::PARAM_INT);
+            $stmt->bindParam(':amount', $amount, PDO::PARAM_INT);
+            $stmt->bindParam(':total_price', $total_price, PDO::PARAM_STR);
+
+            // Execute query
+            if ($stmt->execute()) {
+                header("Location: delivery.php");
+                exit();
+            } else {
+                throw new Exception("Order submission failed.");
+            }
+        } catch (PDOException $e) {
+            throw new Exception("Database error: " . $e->getMessage());
+        }
+    }
+}
+
+// Process order submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
-        // Ensure $conn is set
-        if (!isset($conn)) {
-            throw new Exception("Database connection not found.");
+        if (!isset($_POST['oiltype']) || !isset($_POST['amount'])) {
+            throw new Exception("All fields are required.");
         }
 
-        // Insert order into database
-        $sql = "INSERT INTO orders (user_id, product_name, quantity, total_price) 
-                VALUES (:user_id, :oiltype, :amount, :total_price)";
-        $stmt = $conn->prepare($sql);
+        $oiltype = $_POST['oiltype'];
+        $amount = (int)$_POST['amount']; // Convert to integer
 
-        // Bind parameters
-        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->bindParam(':oiltype', $oiltype, PDO::PARAM_STR);
-        $stmt->bindParam(':amount', $amount, PDO::PARAM_INT);
-        $stmt->bindParam(':total_price', $total_price, PDO::PARAM_STR);
+        // Mapping oil types to item_id (assumes 'items' table exists)
+        $oil_mapping = [
+            "Sunflower Oil" => 1,
+            "Soya Oil" => 2,
+            "Vegetable Oil" => 3
+        ];
 
-        // Execute query
-        if ($stmt->execute()) {
-            header("Location: delivery.php");
-            exit();
-        } else {
-            echo "Order submission failed.";
+        if (!array_key_exists($oiltype, $oil_mapping)) {
+            throw new Exception("Invalid product selected.");
         }
-    } catch (PDOException $e) {
-        echo "Database error: " . $e->getMessage();
+
+        $item_id = $oil_mapping[$oiltype];
+
+        // Place order
+        $order = new Order($conn);
+        $order->placeOrder($user_id, $item_id, $amount);
+
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
     }

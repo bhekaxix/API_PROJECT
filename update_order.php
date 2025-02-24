@@ -1,4 +1,5 @@
 <?php
+
 include 'dbconnection.php';
 
 // Ensure user is logged in
@@ -23,7 +24,11 @@ $order_id = $_GET['order_id'];
 
 // Fetch order details
 try {
-    $sql = "SELECT * FROM orders WHERE order_id = :order_id AND user_id = :user_id";
+    $sql = "SELECT orders.order_id, orders.item_id, orders.quantity, orders.total_price, items.product_name 
+            FROM orders
+            INNER JOIN items ON orders.item_id = items.item_id
+            WHERE orders.order_id = :order_id AND orders.user_id = :user_id";
+
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':order_id', $order_id, PDO::PARAM_INT);
     $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
@@ -37,18 +42,29 @@ try {
     die("Error fetching order: " . $e->getMessage());
 }
 
+// Fetch available products from the `items` table
+try {
+    $sql = "SELECT item_id, product_name FROM items";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Error fetching products: " . $e->getMessage());
+}
+
 // Update order if form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $product_name = $_POST['product_name'];
+    $item_id = $_POST['item_id'];
     $quantity = $_POST['quantity'];
     
     // Calculate total price based on fixed rate
     $total_price = ($quantity / 50) * 400;
 
     try {
-        $sql = "UPDATE orders SET product_name = :product_name, quantity = :quantity, total_price = :total_price WHERE order_id = :order_id AND user_id = :user_id";
+        $sql = "UPDATE orders SET item_id = :item_id, quantity = :quantity, total_price = :total_price 
+                WHERE order_id = :order_id AND user_id = :user_id";
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':product_name', $product_name);
+        $stmt->bindParam(':item_id', $item_id, PDO::PARAM_INT);
         $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
         $stmt->bindParam(':total_price', $total_price);
         $stmt->bindParam(':order_id', $order_id, PDO::PARAM_INT);
@@ -81,10 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h2>Update Order</h2>
     <form method="POST">
         <label>Product Name:</label>
-        <select name="product_name" required>
-            <option value="Soya Oil" <?= $order['product_name'] == 'Soya Oil' ? 'selected' : '' ?>>Soya Oil</option>
-            <option value="Vegetable Oil" <?= $order['product_name'] == 'Vegetable Oil' ? 'selected' : '' ?>>Vegetable Oil</option>
-            <option value="Sunflower Oil" <?= $order['product_name'] == 'Sunflower Oil' ? 'selected' : '' ?>>Sunflower Oil</option>
+        <select name="item_id" required>
+            <?php foreach ($products as $product): ?>
+                <option value="<?= $product['item_id'] ?>" <?= $order['item_id'] == $product['item_id'] ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($product['product_name']) ?>
+                </option>
+            <?php endforeach; ?>
         </select>
 
         <label>Quantity (Liters):</label>
@@ -92,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <p><strong>Fixed Price:</strong> 400 per 50 Liters</p>
 
-        <button href="customer.php" type="submit">Update Order</button>
+        <button type="submit">Update Order</button>
     </form>
 </div>
 

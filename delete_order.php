@@ -1,6 +1,6 @@
 <?php
 require_once 'dbconnection.php';
-session_start();
+
 
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -8,6 +8,12 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
+$dbConnection = new DatabaseConnection('localhost', '2fa', 'root', '');
+$conn = $dbConnection->connect();
+
+if (!$conn) {
+    die("Database connection failed.");
+}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['order_id'])) {
     $order_id = $_POST['order_id'];
@@ -16,7 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['order_id'])) {
         $conn->beginTransaction();
 
         // Check if the order belongs to the logged-in user
-        $sql = "SELECT * FROM orders WHERE order_id = :order_id AND user_id = :user_id";
+        $sql = "SELECT orders.order_id 
+                FROM orders
+                INNER JOIN items ON orders.item_id = items.item_id
+                WHERE orders.order_id = :order_id AND orders.user_id = :user_id";
+
         $stmt = $conn->prepare($sql);
         $stmt->execute(['order_id' => $order_id, 'user_id' => $user_id]);
         $order = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -32,11 +42,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['order_id'])) {
 
         $conn->commit();
 
-        header("Location: customer.php"); // Redirect back to orders page
+        header("Location: customer.php?success=deleted");
         exit();
     } catch (PDOException $e) {
         $conn->rollBack();
-        die("Deletion failed: " . $e->getMessage());
+        die("Error: Deletion failed. " . $e->getMessage());
     }
 } else {
     die("Invalid request.");

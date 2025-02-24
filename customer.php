@@ -1,6 +1,7 @@
 <?php  
-include 'dbconnection.php';
 
+
+require 'dbconnection.php'; // Include the database connection class
 
 // Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -9,26 +10,30 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id']; // Get the logged-in user's ID
 
-// Initialize Database Connection
-$dbConnection = new DatabaseConnection('localhost', '2fa', 'root', '');
-$conn = $dbConnection->connect();
+// ✅ Fix: Pass the required parameters to DatabaseConnection
+try {
+    $dbConnection = new DatabaseConnection('localhost', '2fa', 'root', '');
+    $conn = $dbConnection->connect();
 
-$orders = []; // Prevents undefined variable error
+    $orders = []; // Prevents undefined variable error
 
-if ($conn) { // Ensure $conn is set before querying
-    try {
-        $sql = "SELECT order_id, product_name, quantity, total_price, status, order_date 
-                FROM orders 
-                WHERE user_id = :user_id";
+    if ($conn) { // Ensure $conn is set before querying
+        $sql = "SELECT orders.order_id, items.product_name, orders.quantity, 
+                       orders.total_price, orders.status, orders.order_date 
+                FROM orders
+                JOIN items ON orders.item_id = items.item_id
+                WHERE orders.user_id = :user_id
+                ORDER BY orders.order_date DESC"; // Ensure proper ordering
+
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->execute();
         $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        die("Query failed: " . $e->getMessage());
     }
-} else {
-    die("Database connection failed.");
+} catch (PDOException $e) {
+    die("Database error: " . $e->getMessage());
+} catch (Exception $e) {
+    die("Error: " . $e->getMessage());
 }
 ?>
 
