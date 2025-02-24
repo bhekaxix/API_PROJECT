@@ -28,7 +28,7 @@
 		
 		<button class="signup"><a href="signup.php">Customer</a></button>
 		<button class="signup"><a href="asignup.php">Administrator</a></button>
-		<button class="signup"><a href="dsignup.php">Dispatcher</a></button>
+		
 		
 		
 		<br>
