@@ -1,4 +1,4 @@
-<?php
+<?php 
 require 'dbconnection.php'; // Ensure database connection
 
 
@@ -51,7 +51,7 @@ class Order {
             $stmt->execute([
                 'user_id' => $user_id,
                 'item_id' => $item_id,
-                'quantity' => $liters, // Store liters ordered
+                'quantity' => $liters, 
                 'total_price' => $total_price
             ]);
 
@@ -68,7 +68,7 @@ class Order {
             exit();
         } catch (Exception $e) {
             $this->conn->rollBack();
-            throw new Exception("Error processing order: " . $e->getMessage());
+            echo "Error: " . $e->getMessage();
         }
     }
 }
@@ -105,8 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">

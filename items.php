@@ -1,6 +1,29 @@
 <?php
 require_once 'dbconnection.php'; // Ensure PDO connection
 
+// Handle restock request
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restock_item_id'], $_POST['restock_quantity'])) {
+    $item_id = $_POST['restock_item_id'];
+    $restock_quantity = (int)$_POST['restock_quantity'];
+
+    if ($restock_quantity > 0) {
+        try {
+            $sql = "UPDATE items SET stock = stock + :restock_quantity WHERE item_id = :item_id";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([
+                'restock_quantity' => $restock_quantity,
+                'item_id' => $item_id
+            ]);
+
+            echo "<script>alert('Stock updated successfully!'); window.location.href = 'items.php';</script>";
+        } catch (PDOException $e) {
+            die("Error updating stock: " . $e->getMessage());
+        }
+    } else {
+        echo "<script>alert('Invalid restock quantity.'); window.location.href = 'items.php';</script>";
+    }
+}
+
 // Fetch inventory items
 try {
     $sql = "SELECT * FROM items";
@@ -40,6 +63,8 @@ try {
                 <tr>
                     <th>Product</th>
                     <th>Stock</th>
+                    <th>Price</th>
+                    <th>Restock</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,6 +72,14 @@ try {
                     <tr>
                         <td><?= htmlspecialchars($item['product_name']) ?></td>
                         <td><?= htmlspecialchars($item['stock']) ?></td>
+                        <td><?= htmlspecialchars($item['price']) ?></td>
+                        <td>
+                            <form method="post" style="display:inline;">
+                                <input type="hidden" name="restock_item_id" value="<?= $item['item_id'] ?>">
+                                <input type="number" name="restock_quantity" min="1" required>
+                                <button type="submit">Restock</button>
+                            </form>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
