@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <div class="container">
 	<form method="post" id="signupForm" onsubmit="return validateForm()" class="signup-form">
-		<h2 style="color: crimson;">Sign up</h2>
+		<h2>Sign up</h2>
 		<hr>
 		<br>
 		<br>
