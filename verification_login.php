@@ -35,7 +35,7 @@ class OTPVerification {
     }
 
     public function getUserById($userId) {
-        $stmt = $this->conn->prepare("SELECT * FROM users WHERE user_id = :user_id"); // ✅ Fixed column name
+        $stmt = $this->conn->prepare("SELECT * FROM users WHERE user_id = :user_id");
         $stmt->execute([':user_id' => $userId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
