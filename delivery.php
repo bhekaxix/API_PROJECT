@@ -7,6 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $buildingname = $_POST['buildingname'];
     $instructions = $_POST['instructions'];
     $description = $_POST['description'];
+    $payment_method = $_POST['payment_method'];
 
     try {
         // Ensure $conn is available
@@ -15,8 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         // Prepare SQL statement
-        $sql = "INSERT INTO delivery (address, buildingname, instructions, description) 
-                VALUES (:address, :buildingname, :instructions, :description)";
+        $sql = "INSERT INTO delivery (address, buildingname, instructions, description, payment_method) 
+                VALUES (:address, :buildingname, :instructions, :description, :payment_method)";
         $stmt = $conn->prepare($sql);
 
         // Bind parameters
@@ -24,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bindParam(':buildingname', $buildingname, PDO::PARAM_STR);
         $stmt->bindParam(':instructions', $instructions, PDO::PARAM_STR);
         $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+        $stmt->bindParam(':payment_method', $payment_method, PDO::PARAM_STR);
 
         // Execute query
         if ($stmt->execute()) {
@@ -72,6 +74,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <label>Description:</label>
             <textarea id="description" name="description" rows="4" required></textarea>
+
+            <label>Payment Method:</label>
+            <select name="payment_method" id="payment_method" required>
+                <option value="">Select Payment Method</option>
+                <option value="Cash on Delivery">Cash on Delivery</option>
+                <option value="Mobile Payment">Mobile Payment</option>
+                <option value="Credit/Debit Card">Credit/Debit Card</option>
+            </select>
 
             <input type="submit" value="Save">
         </form>
